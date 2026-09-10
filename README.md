@@ -1,9 +1,8 @@
+EconomyShopGUI Price Calculator Configurator is A web-based tool for Minecraft server administrators using the EconomyShopGUI plugin. It lets you build, edit, and export shops.yml configuration files visually — no manual YAML editing required.
 
 <img width="1892" height="857" alt="Screenshot 2026-09-10 161822" src="https://github.com/user-attachments/assets/16a3c087-2465-4bc5-8b66-37b6b344c9de" />
 <img width="1897" height="856" alt="Screenshot 2026-09-10 161756" src="https://github.com/user-attachments/assets/56d1ace0-96a0-43d9-aaae-80b71a19fd93" />
 <img width="511" height="737" alt="Screenshot 2026-09-10 161832" src="https://github.com/user-attachments/assets/cb220954-1fe2-4bdb-bb62-6440a77d8335" />
-
-EconomyShopGUI Price Calculator Configurator is A web-based tool for Minecraft server administrators using the EconomyShopGUI plugin. It lets you build, edit, and export shops.yml configuration files visually — no manual YAML editing required.
 
 Everything runs directly in the browser. No installation, no backend, no build step.
 
