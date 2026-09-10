@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>EconomyShopGUI Calculator</title>
+<style>
+  :root{--bg:#0f1117;--panel:#161a22;--border:#232833;--text:#e5e9f0;--text2:#8b94a5;--text3:#5a6273;--accent:#4ade80;--accent-h:#22c55e;--accent-bg:rgba(74,222,128,0.08);--danger:#f87171;--danger-h:#ef4444;--danger-bg:rgba(248,113,113,0.1);--warn:#fbbf24;--warn-bg:rgba(251,191,36,0.1);--info:#60a5fa;--info-bg:rgba(96,165,250,0.08);--hover:#1c2129;--radius:6px}
+  [data-theme="light"]{--bg:#fafbfc;--panel:#fff;--border:#e5e8ec;--text:#1a1f28;--text2:#5a6273;--text3:#8b94a5;--accent:#16a34a;--accent-h:#15803d;--accent-bg:rgba(22,163,74,.06);--danger:#dc2626;--danger-h:#b91c1c;--danger-bg:rgba(220,38,38,.06);--warn:#ca8a04;--warn-bg:rgba(202,138,4,.06);--info:#2563eb;--info-bg:rgba(37,99,235,.06);--hover:#f5f7f9}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;min-height:100vh;overflow-x:hidden}
+  .container{max-width:1500px;margin:0 auto;padding:12px 16px}
+  .header{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);margin-bottom:14px}
+  .header h1{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .header h1 .logo{color:var(--accent);font-size:16px}
+  .header .spacer{flex:1}
+  .header .version{font-size:11px;color:var(--text2);padding:2px 8px;background:var(--panel);border:1px solid var(--border);border-radius:20px}
+  .header .version.fallback{color:var(--warn);border-color:var(--warn)}
+  .header-actions{display:flex;gap:4px;align-items:center}
+  .tabs{display:flex;gap:2px;margin-bottom:12px;border-bottom:1px solid var(--border);align-items:flex-end}
+  .tab{background:none;border:none;color:var(--text2);padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;display:flex;align-items:center;gap:6px}
+  .tab:hover{color:var(--text)}
+  .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .tab .badge{background:var(--border);color:var(--text2);padding:0 6px;border-radius:8px;font-size:10px;font-weight:600}
+  .tab.active .badge{background:var(--accent-bg);color:var(--accent)}
+  .tab-content{display:none}.tab-content.active{display:block}
+  .tab-action{background:var(--danger);color:#fff;border:none;padding:8px 16px;font-size:13px;font-weight:600;letter-spacing:0.3px;border-radius:6px 6px 0 0;cursor:pointer;margin-bottom:-1px;margin-left:6px;transition:all .15s;display:inline-flex;align-items:center;gap:6px;font-family:inherit;border-bottom:2px solid transparent}
+  .tab-action:hover{background:var(--danger-h);color:#fff}
+  .tab-action .icon{font-size:13px}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:visible;position:relative}
+  .panel > .panel-head:first-child{border-radius:var(--radius) var(--radius) 0 0}
+  .panel > .panel-body:last-child{border-radius:0 0 var(--radius) var(--radius)}
+  .panel > .panel-body:only-child{border-radius:var(--radius)}
+  .panel-head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border);background:var(--panel)}
+  .panel-head h2{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px}
+  .panel-head .info{font-size:11px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0}
+  .panel-head .spacer{flex:1}
+  .panel-x{background:none;border:none;color:var(--text3);width:22px;height:22px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;display:inline-flex;align-items:center;justify-content:center}
+  .panel-x:hover{background:var(--danger-bg);color:var(--danger)}
+  .panel-body{padding:12px;background:var(--panel)}
+  .panel-btn{background:none;border:1px solid var(--border);color:var(--text2);padding:3px 10px;font-size:11px;border-radius:var(--radius);cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-weight:500;transition:all .15s;font-family:inherit}
+  .panel-btn:hover{color:var(--accent);border-color:var(--accent);background:var(--accent-bg)}
+  .field{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .field label{font-size:10px;color:var(--text2);font-weight:500;letter-spacing:.2px;display:flex;align-items:center;gap:4px}
+  input,select,textarea{width:100%;padding:6px 9px;font-size:12px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;transition:border-color .15s}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+  input[type=checkbox]{width:14px;height:14px;accent-color:var(--accent);cursor:pointer}
+  select{cursor:pointer}
+  button{background:var(--accent);color:#0a0e16;border:none;padding:6px 12px;font-size:12px;font-weight:500;border-radius:var(--radius);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px;font-family:inherit}
+  button:hover:not(:disabled){background:var(--accent-h)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  button.ghost{background:none;color:var(--text2);border:1px solid var(--border)}
+  button.ghost:hover:not(:disabled){color:var(--text);background:var(--hover)}
+  button.ghost.active{color:var(--accent);border-color:var(--accent);background:var(--accent-bg)}
+  button.danger{background:none;color:var(--danger);border:1px solid var(--danger-bg);padding:4px 8px}
+  button.danger:hover:not(:disabled){background:var(--danger-bg)}
+  button.danger-solid{background:var(--danger);color:#fff;border:none}
+  button.danger-solid:hover:not(:disabled){background:var(--danger-h)}
+  button.sm{padding:4px 8px;font-size:11px}
+  .shop-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--border);background:var(--panel)}
+  .shop-search{position:relative;flex:1;min-width:220px}
+  .shop-search input{padding-left:28px}
+  .shop-search .icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:12px;pointer-events:none;z-index:2}
+  .search-drop{position:absolute;top:calc(100% + 6px);left:0;right:0;max-height:min(420px,60vh);overflow-y:auto;overscroll-behavior:contain;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);z-index:100;box-shadow:0 12px 32px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.3);display:none}
+  .search-drop.open{display:block}
+  .search-drop::-webkit-scrollbar{width:8px}
+  .search-drop::-webkit-scrollbar-track{background:transparent}
+  .search-drop::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+  .search-drop .result{padding:7px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);transition:background .1s}
+  .search-drop .result:last-of-type{border-bottom:none}
+  .search-drop .result:hover,.search-drop .result.kbd-active{background:var(--hover)}
+  .search-drop .result.kbd-active{box-shadow:inset 2px 0 0 var(--accent)}
+  .search-drop .meta{flex:1;min-width:0}
+  .search-drop .name{font-size:12px;font-weight:500;display:flex;align-items:center;flex-wrap:wrap;gap:2px}
+  .search-drop .id{font-size:10px;color:var(--text3);font-family:monospace;margin-top:1px}
+  .search-drop .add{background:none;color:var(--text2);border:1px solid var(--border);padding:2px 8px;font-size:11px;flex-shrink:0}
+  .search-drop .add:hover{color:var(--accent);border-color:var(--accent)}
+  .search-drop .empty{padding:14px;text-align:center;color:var(--text3);font-size:12px}
+  .search-drop .result-count{position:sticky;bottom:0;padding:6px 10px;font-size:10px;color:var(--text3);background:var(--panel);border-top:1px solid var(--border);text-align:center;font-weight:500;letter-spacing:.3px}
+
+  .table-wrap{
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:auto;
+    max-height:600px;
+    background:var(--bg);
+    box-shadow:0 1px 0 rgba(255,255,255,.02),0 8px 24px -12px rgba(0,0,0,.5);
+    scrollbar-width:thin;
+    scrollbar-color:var(--border) transparent;
+  }
+  .table-wrap::-webkit-scrollbar{width:10px;height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent}
+  .table-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;border:2px solid var(--bg)}
+  .table-wrap::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+
+  table.unified{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;font-variant-numeric:tabular-nums}
+
+  table.unified thead th{
+    position:sticky;top:0;z-index:3;
+    text-align:left;
+    padding:12px 14px;
+    font-size:10px;
+    color:var(--text3);
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.8px;
+    background:var(--panel);
+    border-bottom:1px solid var(--border);
+    white-space:nowrap;
+    user-select:none;
+  }
+  table.unified thead th:first-child{padding-left:18px}
+  table.unified thead th:last-child{padding-right:18px}
+
+  table.unified tbody td{
+    padding:8px 14px;
+    border-bottom:1px solid var(--border);
+    vertical-align:middle;
+    height:46px;
+  }
+  table.unified tbody td:first-child{padding-left:18px}
+  table.unified tbody td:last-child{padding-right:18px}
+
+  table.unified tbody tr{transition:background-color .12s ease}
+  table.unified tbody tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+  [data-theme="light"] table.unified tbody tr:nth-child(even) td{background:rgba(0,0,0,.015)}
+  table.unified tbody tr:hover td{background:var(--hover)}
+  table.unified tbody tr.selected td{background:var(--accent-bg)}
+  table.unified tbody tr:last-child td{border-bottom:none}
+  table.unified tbody tr.dragging{opacity:.4}
+  table.unified tbody tr.drop-target td{box-shadow:inset 0 2px 0 var(--accent)}
+
+  table.unified input[type=number]{
+    -moz-appearance:textfield;appearance:textfield;
+    padding:6px 10px;font-size:12.5px;font-weight:600;
+    width:100%;text-align:right;
+    background:transparent;color:var(--text);
+    border:1px solid transparent;border-radius:6px;
+    cursor:text;
+    transition:background .15s,border-color .15s,box-shadow .15s;
+    font-family:'SF Mono','Courier New',monospace;
+    font-variant-numeric:tabular-nums;
+    letter-spacing:-.02em;
+  }
+  table.unified input[type=number]::-webkit-outer-spin-button,
+  table.unified input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  table.unified input[type=number]:hover:not(:disabled){background:rgba(255,255,255,.03);border-color:var(--border)}
+  [data-theme="light"] table.unified input[type=number]:hover:not(:disabled){background:rgba(0,0,0,.03)}
+  table.unified input[type=number]:focus{outline:none;background:var(--panel);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+  table.unified input[type=number]:disabled{opacity:.35;cursor:not-allowed}
+
+  table.unified input[type=text]{
+    padding:6px 10px;font-size:12.5px;width:100%;
+    background:transparent;color:var(--text);
+    border:1px solid transparent;border-radius:6px;
+    transition:background .15s,border-color .15s,box-shadow .15s;
+  }
+  table.unified input[type=text]:hover{background:rgba(255,255,255,.03);border-color:var(--border)}
+  [data-theme="light"] table.unified input[type=text]:hover{background:rgba(0,0,0,.03)}
+  table.unified input[type=text]:focus{outline:none;background:var(--panel);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+
+  .drag{
+    cursor:grab;color:var(--text3);user-select:none;
+    font-size:13px;letter-spacing:-2px;text-align:center;
+    opacity:.35;display:inline-block;line-height:1;
+    transition:opacity .15s,color .15s;
+  }
+  table.unified tbody tr:hover .drag{opacity:1}
+  .drag:hover{color:var(--accent)}
+  .drag:active{cursor:grabbing}
+
+  .icon-item{
+    width:26px;height:26px;
+    image-rendering:pixelated;
+    vertical-align:middle;
+    border-radius:7px;
+    display:block;
+    background:rgba(255,255,255,.05);
+    padding:3px;
+    object-fit:contain;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
+  }
+  [data-theme="light"] .icon-item{background:rgba(0,0,0,.045);box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+  .icon-fallback{display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--text3);text-transform:uppercase}
+
+  .mat-name{font-weight:600;font-size:12.5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.3;letter-spacing:-.01em}
+  .manual-arrow{color:var(--accent);font-weight:700;font-size:14px;cursor:help;margin-right:3px}
+
+  .tag{
+    display:inline-block;padding:2px 6px;border-radius:5px;
+    font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+    background:rgba(255,255,255,.06);color:var(--text2);line-height:1.3;
+  }
+  [data-theme="light"] .tag{background:rgba(0,0,0,.06)}
+  .tag.g{background:var(--accent-bg);color:var(--accent)}
+  .tag.y{background:var(--warn-bg);color:var(--warn)}
+  .tag.r{background:var(--danger-bg);color:var(--danger)}
+  .tag.b{background:var(--info-bg);color:var(--info)}
+
+  .calc-val{
+    font-family:'SF Mono','Courier New',monospace;
+    font-size:12px;font-weight:700;
+    padding:5px 10px;text-align:right;border-radius:6px;display:block;
+    font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+    border:1px solid transparent;
+  }
+  .calc-val.buy{color:var(--accent);background:var(--accent-bg)}
+  .calc-val.sell{color:var(--warn);background:var(--warn-bg)}
+  .calc-val.disabled{color:var(--text3);background:transparent;text-align:right}
+
+  .row-actions{
+    display:flex;gap:4px;justify-content:flex-end;
+    opacity:.45;transition:opacity .15s ease;
+  }
+  table.unified tbody tr:hover .row-actions,
+  table.unified tbody tr.selected .row-actions{opacity:1}
+  .row-actions button{padding:4px 9px;font-size:11px;line-height:1;border-radius:6px}
+
+  .toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+  .toolbar input[type=text],.toolbar select{width:auto;min-width:120px;padding:5px 9px;font-size:12px}
+  .toolbar .spacer{flex:1}
+  .bulk{display:flex;gap:5px;flex-wrap:wrap;align-items:center;padding:8px 10px;margin-bottom:10px;font-size:12px;background:var(--info-bg);border:1px solid var(--info);border-radius:var(--radius);color:var(--text)}
+  .bulk b{color:var(--info)}
+  .bulk button{padding:4px 9px;font-size:11px}
+  .bulk .divider{width:1px;height:16px;background:var(--border);margin:0 3px}
+  .preview{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:10px;font-family:'SF Mono','Courier New',monospace;font-size:11px;white-space:pre;overflow:auto;max-height:340px;color:var(--accent);line-height:1.55;transition:opacity .15s}
+  .preview.flash{opacity:.6}
+  .empty{text-align:center;padding:24px;color:var(--text3);font-size:12px}
+  .status{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .status.success{color:var(--accent)}
+  .status.warn{color:var(--warn)}
+  .status.error{color:var(--danger)}
+  .check{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);cursor:pointer;user-select:none;white-space:nowrap}
+  .check:hover{color:var(--text)}
+  .hint{font-size:11px;color:var(--text3);margin-top:6px;display:flex;gap:5px;align-items:flex-start}
+  .pages-bar{display:flex;gap:4px;flex-wrap:wrap;align-items:center;min-height:22px}
+  .page{background:var(--bg);border:1px solid var(--border);color:var(--text2);padding:4px 10px;font-size:12px;border-radius:var(--radius);cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .15s;font-family:inherit}
+  .page:hover{color:var(--text);border-color:var(--text3)}
+  .page.active{background:var(--accent);color:#0a0e16;border-color:var(--accent);font-weight:600}
+  .page .x{opacity:.5;font-size:10px;padding:0 1px}
+  .page .x:hover{opacity:1}
+  [data-tip]{position:relative}
+  [data-tip]:before{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#000;color:#fff;padding:5px 9px;border-radius:4px;font-size:11px;font-weight:400;line-height:1.4;white-space:pre;z-index:1000;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .15s;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+  [data-tip]:hover:before{opacity:1;visibility:visible}
+  .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(3px);padding:20px}
+  .modal{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px;max-width:460px;width:100%;max-height:85vh;overflow-y:auto}
+  .modal h3{font-size:14px;margin-bottom:10px}
+  .modal p{font-size:12px;color:var(--text2);margin-bottom:8px}
+  .modal .warn-icon{width:40px;height:40px;border-radius:50%;background:var(--danger-bg);color:var(--danger);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 12px}
+  .modal .warn-text{color:var(--danger);background:var(--danger-bg);padding:8px 10px;border-radius:4px;font-size:11px;text-align:center;margin:10px 0;font-weight:500}
+  .modal-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:16px}
+  .toast{position:fixed;bottom:16px;right:16px;background:var(--panel);color:var(--text);border:1px solid var(--accent);border-left:3px solid var(--accent);border-radius:6px;padding:10px 14px;font-size:12px;z-index:2000;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+  .workflow-note{padding:8px 12px;margin-bottom:10px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);font-size:12px;color:var(--text2);line-height:1.5}
+  .io-area{padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px}
+  .io-area textarea{height:110px;font-family:'SF Mono','Courier New',monospace;font-size:11px;resize:vertical;line-height:1.5}
+  .file-input{display:none}
+  .apply-bar{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .yaml-controls{display:flex;gap:14px;padding:10px 12px;border-bottom:1px solid var(--border);align-items:center;flex-wrap:wrap;background:var(--bg)}
+  .yc-field{display:flex;align-items:center;gap:6px}
+  .yc-field label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;font-weight:600;white-space:nowrap;margin:0}
+  .yc-grow{flex:1;min-width:200px}
+  .yc-file,.yc-page,.yc-gui{padding:4px 8px;font-size:12px;width:auto}
+  .yc-file{width:130px}.yc-page{width:100px}.yc-gui{width:55px;text-align:center}
+  .yc-suffix{font-size:11px;color:var(--text3)}
+  .preview-mode-btn{background:none;border:1px solid var(--border);color:var(--text2);padding:3px 8px;font-size:11px;border-radius:var(--radius);cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .15s;font-family:inherit;font-weight:500}
+  .preview-mode-btn:hover{color:var(--accent);border-color:var(--accent);background:var(--accent-bg)}
+  .preview-mode-btn.all{background:var(--accent-bg);color:var(--accent);border-color:var(--accent)}
+  .gsettings-modal{max-width:500px}
+  .gsettings-hero{text-align:center;padding:4px 0 16px;border-bottom:1px solid var(--border);margin-bottom:16px}
+  .gsettings-hero .icon{width:48px;height:48px;border-radius:12px;background:var(--accent);color:#0a0e16;display:inline-flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:10px}
+  .gsettings-hero h3{font-size:16px;margin-bottom:4px}
+  .gsettings-hero p{font-size:11px;color:var(--text3);margin:0}
+  .gsettings-body{display:flex;flex-direction:column;gap:14px}
+  .gsettings-body .field label{font-size:11px;display:flex;align-items:center;gap:4px;margin-bottom:4px;color:var(--text2)}
+  .gsettings-body input,.gsettings-body select{padding:8px 10px;font-size:13px}
+  .mod-preview{padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;margin-top:4px}
+  .mod-preview-title{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;font-weight:600;display:flex;align-items:center;gap:6px}
+  .mod-formula{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;padding:6px 0}
+  .mod-formula + .mod-formula{border-top:1px dashed var(--border)}
+  .mod-formula-label{font-size:12px;color:var(--text2)}
+  .mod-formula-label b{color:var(--text)}
+  .mod-formula-eq{color:var(--text3);font-size:14px}
+  .mod-formula-result{font-family:'SF Mono',monospace;font-size:14px;font-weight:700;text-align:right}
+  .mod-formula-result.buy{color:var(--accent)}
+  .mod-formula-result.sell{color:var(--warn)}
+  .mod-example-note{font-size:10px;color:var(--text3);margin-top:8px;font-style:italic}
+  .danger-zone{margin-top:18px;padding:14px;background:var(--danger-bg);border:1px solid var(--danger);border-radius:10px}
+  .danger-zone-title{color:var(--danger);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .danger-zone p{color:var(--text2);font-size:11px;margin-bottom:12px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1><span class="logo">💰</span> EconomyShopGUI Calculator</h1>
+    <span class="version" id="verBadge">—</span>
+    <div class="spacer"></div>
+    <div class="header-actions">
+      <button class="ghost sm" data-tip="Toggle theme" id="themeBtn" aria-label="Toggle light/dark theme" onclick="toggleTheme()">🌙</button>
+    </div>
+  </div>
+  <div id="fallbackBanner" style="display:none;padding:8px 12px;background:var(--warn-bg);border:1px solid var(--warn);border-radius:var(--radius);margin-bottom:10px;font-size:11px"></div>
+  <div class="tabs">
+    <button class="tab active" data-tab="simple" onclick="switchTab('simple')">Simple Config <span class="badge" id="simpleBadge">0</span></button>
+    <button class="tab" data-tab="advanced" onclick="switchTab('advanced')">Advanced Config <span class="badge" id="advBadge">0</span></button>
+    <button class="tab-action" data-tip="Version &amp; Price Modifiers&#10;(Ctrl+,)" onclick="openGlobalSettings()">
+      <span class="icon">⚙</span> GLOBAL SETTINGS
+    </button>
+  </div>
+
+  <!-- ==================== SIMPLE ==================== -->
+  <div class="tab-content active" id="tab-simple">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>📦 Shop items</h2>
+        <span class="info" id="simplePageTitle"></span>
+        <span class="spacer"></span>
+        <button class="panel-btn" onclick="openPresetsModal('simple-page')">✨ Presets</button>
+        <span class="tag g" id="simpleItemCount">0</span>
+        <button class="panel-x" data-tip="Delete ALL items from this page&#10;PERMANENT" aria-label="Delete all items from this page" onclick="clearSimpleItems()">✕</button>
+      </div>
+      <div class="shop-bar">
+        <div class="shop-search" id="simpleSearchWrap"><span class="icon" aria-hidden="true">🔎</span>
+          <input type="text" id="simpleSearchInput" placeholder="Search items to add..." aria-label="Search Minecraft items to add" autocomplete="off" spellcheck="false">
+          <div class="search-drop" id="simpleSearchResults"></div>
+        </div>
+        <label class="check"><input type="checkbox" id="simpleOnlyCraftable"> Craftable only</label>
+        <button class="ghost sm" id="simpleImportToggleBtn" onclick="toggleSimpleImport()">📥 Import</button>
+        <button class="ghost sm" id="simpleBulkToggleBtn" onclick="toggleSimpleBulk()">📋 Bulk</button>
+        <span class="status" id="simpleLoadStatus">Loading...</span>
+      </div>
+      <div class="panel-body">
+        <div id="simpleImportArea" class="io-area" style="display:none">
+          <div style="font-size:11px;color:var(--text2);margin-bottom:8px">📁 <b id="simpleImportFileName">—</b></div>
+          <input type="file" id="simpleImportFileInput" class="file-input" accept=".yml,.yaml" onchange="onSimpleImportFileSelected(event)">
+          <div class="toolbar" style="margin:0">
+            <button class="sm" onclick="document.getElementById('simpleImportFileInput').click()">📂 Choose file</button>
+            <button class="sm" id="simpleImportApplyBtn" onclick="applySimpleImportFile()" disabled>Import</button>
+            <button class="ghost sm" onclick="hideSimpleImport()">Cancel</button>
+            <label class="check"><input type="checkbox" id="simpleImportClear"> Replace</label>
+            <span id="simpleImportStatus" class="status"></span>
+          </div>
+        </div>
+        <div id="simpleBulkArea" class="io-area" style="display:none">
+          <textarea id="simpleBulkText" placeholder="DIAMOND 1000&#10;IRON_INGOT 500"></textarea>
+          <div class="toolbar" style="margin:6px 0 0">
+            <button class="sm" onclick="applySimpleBulkPaste()">Add all</button>
+            <button class="ghost sm" onclick="hideSimpleBulk()">Cancel</button>
+            <span id="simpleBulkStatus" class="status"></span>
+          </div>
+        </div>
+        <div class="toolbar">
+          <input type="text" id="simpleFilterItems" placeholder="Filter items...">
+          <select id="simpleSortItems">
+            <option value="none">Sort</option><option value="name-asc">Name ↑</option><option value="name-desc">Name ↓</option>
+            <option value="buy-asc">Buy ↑</option><option value="buy-desc">Buy ↓</option><option value="cat">Category</option>
+          </select>
+          <select id="simpleCategoryFilter"><option value="">All</option></select>
+        </div>
+        <div class="bulk" id="simpleBulkBar" style="display:none">
+          <span><b id="simpleBulkCount">0</b> selected</span>
+          <span class="divider"></span>
+          <button class="ghost sm" onclick="simpleBulkMultiply()">✖ Multiply</button>
+          <button class="ghost sm" onclick="simpleBulkAutoSell()">% Auto-sell 25%</button>
+          <button class="ghost sm" onclick="simpleBulkToggleSell(true)">✓ Sell ON</button>
+          <button class="ghost sm" onclick="simpleBulkToggleSell(false)">✗ Sell OFF</button>
+          <button class="danger sm" onclick="simpleBulkDelete()">🗑 Delete</button>
+          <span class="divider"></span>
+          <button class="ghost sm" onclick="simpleBulkSelectNone()">Clear selection</button>
+        </div>
+        <div class="table-wrap">
+          <table class="unified">
+            <thead>
+              <tr>
+                <th style="width:30px"><input type="checkbox" id="simpleSelectAllBox" aria-label="Select all items on this page" onchange="simpleToggleAllRows(this.checked)"></th>
+                <th style="width:24px"></th>
+                <th style="width:34px"></th>
+                <th>Material</th>
+                <th>Display name</th>
+                <th style="width:110px">Buy price</th>
+                <th style="width:110px">Final buy</th>
+                <th style="width:110px">Final sell</th>
+                <th style="width:50px" data-tip="Can players sell this item?">Sell</th>
+                <th style="width:60px"></th>
+              </tr>
+            </thead>
+            <tbody id="simpleItemsBody"><tr><td colspan="10"><div class="empty">Search above to add items</div></td></tr></tbody>
+          </table>
+        </div>
+        <div class="hint" id="simpleValidationHint"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>📋 YAML Preview</h2><span class="info" id="simplePreviewInfo"></span><span class="spacer"></span>
+        <button class="preview-mode-btn" id="simplePreviewModeBtn" onclick="toggleSimplePreviewMode()" data-tip="Switch between current page and full file">📄 This page</button>
+        <button class="ghost sm" onclick="copySimpleYaml()">📋 Copy</button>
+        <button class="sm" onclick="exportSimpleYaml()" data-tip="Export always includes ALL pages">⬇ Export .yml</button>
+      </div>
+      <div class="yaml-controls">
+        <div class="yc-field"><label>📄 File</label><input type="text" id="simpleFileNameInput" class="yc-file" value="Ores"><span class="yc-suffix">.yml</span></div>
+        <div class="yc-field"><label>📑 Page</label><input type="text" id="simplePageNameInput" class="yc-page" placeholder="page1"></div>
+        <div class="yc-field"><label>📐 GUI rows</label><input type="number" id="simplePageRowsInput" class="yc-gui" min="1" max="6" value="4"></div>
+        <div class="yc-field yc-grow"><label>📚 Pages</label><div class="pages-bar" id="simplePagesBar"></div></div>
+      </div>
+      <div class="panel-body"><div class="preview" id="simplePreview"></div></div>
+    </div>
+  </div>
+
+  <!-- ==================== ADVANCED ==================== -->
+  <div class="tab-content" id="tab-advanced">
+    <div class="workflow-note">
+      Search items to add them as <strong>base resources</strong>, then click <strong>🧮 Calculate</strong> to compute prices for all craftable items. Select the ones you want and push them to the current page.
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>🧪 Advanced pool</h2><span class="info" id="advPageTitle"></span><span class="spacer"></span>
+        <button class="panel-btn" onclick="openPresetsModal('advanced-base')">✨ Presets</button>
+        <span class="tag g" id="advPoolCount">0</span>
+        <button class="panel-x" data-tip="Clear pool & base resources&#10;PERMANENT" aria-label="Clear pool and base resources" onclick="clearAdvancedPool()">✕</button>
+      </div>
+      <div class="shop-bar">
+        <div class="shop-search" id="advSearchWrap"><span class="icon" aria-hidden="true">🔎</span>
+          <input type="text" id="advSearchInput" placeholder="Search items to add as base..." aria-label="Search Minecraft items to add as base resource" autocomplete="off" spellcheck="false">
+          <div class="search-drop" id="advSearchResults"></div>
+        </div>
+        <button onclick="runCalculation()" data-tip="Walk all recipes to compute prices">🧮 Calculate</button>
+        <button class="ghost sm" id="advImportToggleBtn" onclick="toggleAdvImport()">📥 Import</button>
+        <button class="ghost sm" id="advBulkToggleBtn" onclick="toggleAdvBulk()">📋 Bulk</button>
+        <button class="ghost sm" onclick="exportBaseYaml()" data-tip="Export base resources only">📤 Bases</button>
+        <span id="calcStatus" class="status"></span>
+      </div>
+      <div class="panel-body">
+        <div id="advImportArea" class="io-area" style="display:none">
+          <div style="font-size:11px;color:var(--text2);margin-bottom:8px">📁 <b id="advImportFileName">—</b></div>
+          <input type="file" id="advImportFileInput" class="file-input" accept=".yml,.yaml" onchange="onAdvImportFileSelected(event)">
+          <div class="toolbar" style="margin:0">
+            <button class="sm" onclick="document.getElementById('advImportFileInput').click()">📂 Choose file</button>
+            <button class="sm" id="advImportApplyBtn" onclick="applyAdvImportFile()" disabled>Import</button>
+            <button class="ghost sm" onclick="hideAdvImport()">Cancel</button>
+            <label class="check"><input type="checkbox" id="advImportClear"> Replace</label>
+            <span id="advImportStatus" class="status"></span>
+          </div>
+        </div>
+        <div id="advBulkArea" class="io-area" style="display:none">
+          <textarea id="advBulkText" placeholder="COBBLESTONE 1&#10;STICK 0.5"></textarea>
+          <div class="toolbar" style="margin:6px 0 0">
+            <button class="sm" onclick="applyAdvBulkPaste()">Add all</button>
+            <button class="ghost sm" onclick="hideAdvBulk()">Cancel</button>
+            <span id="advBulkStatus" class="status"></span>
+          </div>
+        </div>
+        <div class="toolbar">
+          <input type="text" id="advPoolFilter" placeholder="Filter pool...">
+          <select id="advPoolSort">
+            <option value="none">Sort</option><option value="name-asc">Name ↑</option><option value="name-desc">Name ↓</option>
+            <option value="buy-asc">Buy ↑</option><option value="buy-desc">Buy ↓</option>
+            <option value="cat">Category</option><option value="source">Source</option>
+          </select>
+          <select id="advPoolCategoryFilter"><option value="">All</option></select>
+          <label class="check"><input type="checkbox" id="advPoolOnlyPriced" checked> Only priced</label>
+          <span class="spacer"></span>
+          <span style="font-size:11px;color:var(--text2)">Base: <b id="advBaseCount">0</b> · Sel: <b id="advSelectedCount" style="color:var(--accent)">0</b></span>
+        </div>
+        <div class="bulk" id="advBulkBar" style="display:none">
+          <span><b id="advBulkCount">0</b> selected</span>
+          <span class="divider"></span>
+          <button class="ghost sm" onclick="advBulkMultiply()">✖ Multiply</button>
+          <button class="ghost sm" onclick="advBulkAutoSell()">% Auto-sell 25%</button>
+          <button class="ghost sm" onclick="advBulkToggleSell(true)">✓ Sell ON</button>
+          <button class="ghost sm" onclick="advBulkToggleSell(false)">✗ Sell OFF</button>
+          <button class="danger sm" onclick="advBulkDelete()">🗑 Delete</button>
+          <span class="divider"></span>
+          <button class="ghost sm" onclick="advBulkSelectNone()">Clear selection</button>
+        </div>
+        <div class="table-wrap">
+          <table class="unified">
+            <thead>
+              <tr>
+                <th style="width:30px"><input type="checkbox" id="advPoolSelectAllBox" aria-label="Select all pool items" onchange="advToggleAllPool(this.checked)"></th>
+                <th style="width:24px"></th>
+                <th style="width:34px"></th>
+                <th>Material</th>
+                <th>Display name</th>
+                <th style="width:110px">Buy price</th>
+                <th style="width:110px">Final buy</th>
+                <th style="width:110px">Final sell</th>
+                <th style="width:50px" data-tip="Can players sell this item?">Sell</th>
+                <th style="width:60px"></th>
+              </tr>
+            </thead>
+            <tbody id="advPoolBody"><tr><td colspan="10"><div class="empty">Search above to add base resources</div></td></tr></tbody>
+          </table>
+        </div>
+        <div class="hint" id="advPoolHint"></div>
+        <div class="apply-bar">
+          <button onclick="addSelectedToAdvPage()" data-tip="Add selected pool items to Advanced's current page">⬇ Add selected to page</button>
+          <span style="font-size:11px;color:var(--text2);margin-left:4px">Target page:</span>
+          <div class="pages-bar" id="advTargetPagesBar"></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>📋 YAML Preview</h2><span class="info" id="advPreviewInfo"></span><span class="spacer"></span>
+        <button class="preview-mode-btn" id="advPreviewModeBtn" onclick="toggleAdvPreviewMode()" data-tip="Switch between current page and full file">📄 This page</button>
+        <button class="ghost sm" onclick="copyAdvancedYaml()">📋 Copy</button>
+        <button class="sm" onclick="exportAdvancedYaml()" data-tip="Export always includes ALL pages">⬇ Export .yml</button>
+      </div>
+      <div class="yaml-controls">
+        <div class="yc-field"><label>📄 File</label><input type="text" id="advFileNameInput" class="yc-file" value="Crafted"><span class="yc-suffix">.yml</span></div>
+        <div class="yc-field"><label>📑 Page</label><input type="text" id="advPageNameInput" class="yc-page" placeholder="page1"></div>
+        <div class="yc-field"><label>📐 GUI rows</label><input type="number" id="advPageRowsInput" class="yc-gui" min="1" max="6" value="4"></div>
+        <div class="yc-field yc-grow"><label>📚 Pages</label><div class="pages-bar" id="advPagesBar"></div></div>
+      </div>
+      <div class="panel-body"><div class="preview" id="advancedPreview" style="max-height:300px"></div></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.1/js-yaml.min.js"></script>
+<script>
+/* ================= CONSTANTS ================= */
+const BASE_URL='https://raw.githubusercontent.com/PrismarineJS/minecraft-data/master';
+const VERSIONS_URL=`${BASE_URL}/data/pc/common/versions.json`;
+const ICON_BASE='https://minecraftitemids.com/item/64/';
+const STORAGE_KEY='eshgui_v31';
+const MAX_UNDO=60;
+const SEARCH_LIMIT=200;
+const FETCH_TIMEOUT_MS=8000;
+const MAX_FALLBACK_ATTEMPTS=6;
+const SEARCH_DEBOUNCE_MS=120;
+const VERSIONS=['1.21.11','1.21.10','1.21.9','1.21.8','1.21.3','1.21.1','1.21','1.20.6','1.20.4','1.20.1','1.20','1.19.4','1.19.2','1.19','1.18.2','1.18','1.17.1','1.17','1.16.5','1.16','1.15.2','1.14.4','1.13.2','1.12.2','1.11.2','1.10.2','1.9.4','1.8.8','1.7.10'];
+
+/* ================= PRESETS ================= */
+/* Format: [minecraft internal name, buy price, sell flag (any value >=0 = sellable, -1/undefined = not sellable)] */
+const PRESETS={
+  'Ores & Ingots':[
+    ['coal',8,1],['raw_iron',12,1],['raw_gold',20,1],['raw_copper',6,1],
+    ['iron_ingot',16,1],['gold_ingot',28,1],['copper_ingot',8,1],
+    ['diamond',180,1],['emerald',120,1],['redstone',4,1],['lapis_lazuli',5,1],
+    ['quartz',6,1],['netherite_scrap',600,1],['amethyst_shard',10,1]
+  ],
+  'Wood & Building':[
+    ['oak_log',3,1],['spruce_log',3,1],['birch_log',3,1],['oak_planks',2,1],
+    ['stick',1,1],['cobblestone',1,1],['stone',2,1],['sand',1,1],['gravel',1,1],
+    ['glass',3,1],['bricks',4,1]
+  ],
+  'Food & Farming':[
+    ['wheat',2,1],['wheat_seeds',1,1],['carrot',2,1],['potato',2,1],['beetroot',2,1],
+    ['bread',4,1],['apple',3,1],['melon_slice',2,1],['pumpkin',3,1],['sugar_cane',2,1],
+    ['cooked_beef',6,1],['cooked_chicken',5,1],['cooked_porkchop',6,1],['egg',2,1],['milk_bucket',10,1]
+  ],
+  'Mob Drops':[
+    ['rotten_flesh',1,1],['bone',3,1],['string',2,1],['spider_eye',4,1],
+    ['gunpowder',6,1],['ender_pearl',40,1],['blaze_rod',60,1],['slime_ball',8,1],
+    ['leather',6,1],['feather',2,1]
+  ]
+};
+
+/* ================= STATE ================= */
+const DEFAULT_SIMPLE=()=>({fileName:'Ores',pages:[{name:'page1',guiRows:4,items:[]}],currentPageIndex:0,onlyCraftable:false,previewCurrent:true});
+const DEFAULT_ADVANCED=()=>({fileName:'Crafted',pages:[{name:'page1',guiRows:4,items:[]}],currentPageIndex:0,baseResources:[],poolEdits:{},poolSelected:[],poolOrder:[],previewCurrent:true});
+let state={theme:'dark',activeTab:'simple',version:'1.21.11',buyModifier:1.0,sellModifier:0.25,simple:DEFAULT_SIMPLE(),advanced:DEFAULT_ADVANCED()};
+let allItems=[],itemById={},itemByName={},matToId={},recipesById={},craftableIds=new Set(),computedPool=[],simpleSelectedRows=new Set(),advSelectedRows=new Set(),activeVersion=null,pendingSimpleImportFile=null,pendingAdvImportFile=null;
+
+/* ================= HELPERS ================= */
+function $(id){return document.getElementById(id)}
+function fmt(n){if(n===-1||n===null||n===undefined||!Number.isFinite(n))return'-1';return Number(n).toFixed(1)}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function norm(s){return String(s).toLowerCase().replace(/[\s_-]/g,'')}
+function clampRows(v){const n=parseInt(v);return Math.min(6,Math.max(1,Number.isFinite(n)?n:4))}
+function debounce(fn,ms){let t;return(...args)=>{clearTimeout(t);t=setTimeout(()=>fn(...args),ms)}}
+function matFromName(n){return String(n).toUpperCase().replace(/[^A-Z0-9_]/g,'_')}
+function defaultDisplay(n){return '&e'+String(n).split('_').map(w=>w?w[0].toUpperCase()+w.slice(1).toLowerCase():'').join(' ')}
+function simpleCurPage(){return state.simple.pages[state.simple.currentPageIndex]}
+function advancedCurPage(){return state.advanced.pages[state.advanced.currentPageIndex]}
+function getCategory(name){const n=String(name).toLowerCase();
+  if(n.endsWith('_ore')||n==='ancient_debris')return'Ores';
+  if(n.endsWith('_ingot')||['diamond','emerald','coal','redstone','lapis_lazuli','quartz','netherite_scrap','amethyst_shard'].includes(n))return'Materials';
+  if(n.endsWith('_block'))return'Blocks';
+  if(n.endsWith('_planks')||n.endsWith('_log')||n.endsWith('_wood')||n.endsWith('_stem')||n==='stick')return'Wood';
+  if(n.includes('sword')||n.includes('pickaxe')||n.includes('axe')||n.includes('shovel')||n.includes('hoe'))return'Tools';
+  if(n.includes('helmet')||n.includes('chestplate')||n.includes('leggings')||n.includes('boots'))return'Armor';
+  if(n.includes('apple')||n.includes('bread')||n.includes('cooked_'))return'Food';
+  return'Other'}
+function iconHtml(m,size){size=size||22;const url=ICON_BASE+String(m).toLowerCase()+'.png';const letter=esc(String(m).charAt(0));
+  return `<img class="icon-item" src="${url}" style="width:${size}px;height:${size}px" loading="lazy" alt="" onerror="this.outerHTML='<span class=\\'icon-item icon-fallback\\' style=\\'width:${size}px;height:${size}px;font-size:${Math.max(9,size*0.45)}px\\'>${letter}</span>'">`}
+function sortByRelevance(matches,nq){return matches.sort((a,b)=>{
+  const na=norm(a.name),nb=norm(b.name);
+  const aExact=na===nq?0:1,bExact=nb===nq?0:1;if(aExact!==bExact)return aExact-bExact;
+  const aStarts=na.startsWith(nq)?0:1,bStarts=nb.startsWith(nq)?0:1;if(aStarts!==bStarts)return aStarts-bStarts;
+  const aWord=na.includes(nq)?0:1,bWord=nb.includes(nq)?0:1;if(aWord!==bWord)return aWord-bWord;
+  return na.localeCompare(nb)})}
+
+function attachTableInputs(){
+  document.querySelectorAll('table.unified input[type=number],table.unified input[type=text]').forEach(inp=>{
+    if(inp._selFocus)return;inp._selFocus=true;
+    inp.addEventListener('focus',e=>{setTimeout(()=>e.target.select(),0)});
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur()}});
+  });
+}
+
+/* ================= UNDO / REDO ================= */
+/* Uses structuredClone (native deep-clone) instead of JSON.stringify+JSON.parse round-trips —
+   same semantics, less CPU work per commit() on large shop configs. Falls back to JSON cloning
+   on the rare browser without structuredClone support. */
+const undoStack=[],redoStack=[];
+function snapshot(){return typeof structuredClone==='function'?structuredClone(state):JSON.parse(JSON.stringify(state))}
+function commit(){undoStack.push(snapshot());if(undoStack.length>MAX_UNDO)undoStack.shift();redoStack.length=0}
+function applySnap(d){Object.assign(state,d);
+  if(!state.simple||!state.simple.pages||!state.simple.pages.length)state.simple=DEFAULT_SIMPLE();
+  if(!state.advanced||!state.advanced.pages||!state.advanced.pages.length)state.advanced=DEFAULT_ADVANCED();
+  if(state.simple.currentPageIndex>=state.simple.pages.length)state.simple.currentPageIndex=state.simple.pages.length-1;
+  if(state.advanced.currentPageIndex>=state.advanced.pages.length)state.advanced.currentPageIndex=state.advanced.pages.length-1;
+  renderAll()}
+function undo(){if(!undoStack.length)return toast('Nothing to undo');redoStack.push(snapshot());applySnap(undoStack.pop());persist();toast('Undone')}
+function redo(){if(!redoStack.length)return toast('Nothing to redo');undoStack.push(snapshot());applySnap(redoStack.pop());persist();toast('Redone')}
+
+/* ================= TOAST ================= */
+let toastT=null;
+function toast(msg){let el=document.querySelector('.toast');if(!el){el=document.createElement('div');el.className='toast';el.setAttribute('role','status');el.setAttribute('aria-live','polite');document.body.appendChild(el)}el.textContent=msg;clearTimeout(toastT);toastT=setTimeout(()=>el.remove(),2000)}
+
+/* ================= PERSIST ================= */
+let lastPersistWarnAt=0;
+function persist(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));return true}
+  catch(e){const now=Date.now();if(now-lastPersistWarnAt>4000){lastPersistWarnAt=now;
+    toast('⚠ Could not save (storage full?) — export a backup soon');
+    const b=$('fallbackBanner');if(b){b.innerHTML='⚠️ <strong>Save failed:</strong> your browser storage is full or unavailable. Your latest changes are NOT saved — export your .yml files now to avoid losing work. <button class="ghost sm" onclick="this.parentElement.style.display=\'none\'">Dismiss</button>';b.style.display='block'}}
+    return false}}
+function restore(){try{
+  const raw=localStorage.getItem(STORAGE_KEY);
+  if(raw){Object.assign(state,JSON.parse(raw))}
+  else{const old=localStorage.getItem('eshgui_v30')||localStorage.getItem('eshgui_v29')||localStorage.getItem('eshgui_v28');
+    if(old){const d=JSON.parse(old);state.theme=d.theme||'dark';state.version=d.version||'1.21.11';state.buyModifier=d.buyModifier||1.0;state.sellModifier=d.sellModifier||0.25;state.simple=d.simple||DEFAULT_SIMPLE();state.advanced=d.advanced||DEFAULT_ADVANCED()}
+    else if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)state.theme='light'}
+  if(!state.simple||!state.simple.pages||!state.simple.pages.length)state.simple=DEFAULT_SIMPLE();
+  if(!state.advanced||!state.advanced.pages||!state.advanced.pages.length)state.advanced=DEFAULT_ADVANCED();
+  if(state.simple.previewCurrent===undefined)state.simple.previewCurrent=true;
+  if(state.advanced.previewCurrent===undefined)state.advanced.previewCurrent=true;
+  if(state.simple.onlyCraftable===undefined)state.simple.onlyCraftable=false;
+  if(!state.advanced.poolEdits)state.advanced.poolEdits={};
+  if(!Array.isArray(state.advanced.poolSelected))state.advanced.poolSelected=[];
+  if(!Array.isArray(state.advanced.poolOrder))state.advanced.poolOrder=[];
+  state.simple.pages.forEach(p=>p.items.forEach(it=>{delete it.sell;if(it.sellEnabled===undefined)it.sellEnabled=true}));
+  state.advanced.pages.forEach(p=>p.items.forEach(it=>{delete it.sell;if(it.sellEnabled===undefined)it.sellEnabled=true}));
+  state.advanced.baseResources.forEach(b=>{delete b.sell});
+}catch(e){}}
+
+/* ================= THEME ================= */
+function applyTheme(){document.documentElement.setAttribute('data-theme',state.theme);$('themeBtn').textContent=state.theme==='dark'?'🌙':'☀️'}
+function toggleTheme(){state.theme=state.theme==='dark'?'light':'dark';applyTheme();persist()}
+
+/* ================= VERSIONS ================= */
+function isOfficialRelease(v){return /^\d+(\.\d+)*$/.test(v)}
+async function loadVersionsFromApi(){const CACHE_KEY='mc_versions_cache';const CACHE_TTL=24*60*60*1000;let cached=null;
+  try{const raw=localStorage.getItem(CACHE_KEY);if(raw){const{data,ts}=JSON.parse(raw);if(Date.now()-ts<CACHE_TTL&&Array.isArray(data)&&data.length)cached=data}}catch(e){}
+  let versions=cached;
+  if(!versions){try{const resp=await fetchWithTimeout(VERSIONS_URL);if(!resp.ok)throw new Error('HTTP '+resp.status);const all=await resp.json();versions=all.filter(isOfficialRelease).reverse();try{localStorage.setItem(CACHE_KEY,JSON.stringify({data:versions,ts:Date.now()}))}catch(e){}}catch(e){versions=null}}
+  if(!versions||!versions.length)return;
+  VERSIONS.length=0;VERSIONS.push(...versions);
+  if(!versions.includes(state.version)){state.version=versions[0];persist()}
+  updateStatus()}
+
+/* ================= GLOBAL SETTINGS ================= */
+let gsTemp={version:null,buyModifier:null,sellModifier:null};
+function openGlobalSettings(){gsTemp={version:state.version,buyModifier:state.buyModifier,sellModifier:state.sellModifier};renderGlobalSettingsModal()}
+function renderGlobalSettingsModal(){const bm=gsTemp.buyModifier;const sm=gsTemp.sellModifier;const sample=1000;
+  showModal(`<div class="gsettings-modal">
+    <div class="gsettings-hero"><div class="icon">⚙</div><h3>Global Settings</h3><p>Applies to both Simple and Advanced Config</p></div>
+    <div class="gsettings-body">
+      <div class="field"><label>Minecraft Version</label><select id="gs-version" onchange="onGsChange()">${VERSIONS.map(v=>`<option value="${v}"${v===gsTemp.version?' selected':''}>${v}</option>`).join('')}</select></div>
+      <div class="field"><label data-tip="Final Buy = Buy × Buy Modifier">Buy modifier</label><input type="number" id="gs-buy-mod" value="${bm}" step="0.05" min="0" oninput="onGsChange()"></div>
+      <div class="field"><label data-tip="Final Sell = Buy × Sell Modifier">Sell modifier</label><input type="number" id="gs-sell-mod" value="${sm}" step="0.05" min="0" oninput="onGsChange()"></div>
+      <div class="mod-preview">
+        <div class="mod-preview-title">📊 Live preview</div>
+        <div class="mod-formula"><span class="mod-formula-label">Buy 1000 × <b id="gs-mp-buy-mod">${bm}</b></span><span class="mod-formula-eq">=</span><span class="mod-formula-result buy" id="gs-mp-final-buy">${(sample*bm).toFixed(1)}</span></div>
+        <div class="mod-formula"><span class="mod-formula-label">Buy 1000 × <b id="gs-mp-sell-mod">${sm}</b></span><span class="mod-formula-eq">=</span><span class="mod-formula-result sell" id="gs-mp-final-sell">${(sample*sm).toFixed(1)}</span></div>
+        <div class="mod-example-note">Example assumes base Buy = 1000. Updates as you type.</div>
+      </div>
+      <div class="danger-zone">
+        <div class="danger-zone-title">⚠️ Danger Zone</div>
+        <p><strong>Delete All Data</strong> permanently erases <strong>everything</strong>: Simple items, Advanced pool, all pages, all settings.</p>
+        <button class="danger-solid" onclick="openDeleteMemoryConfirm()">🗑️ Delete All Data & Clear Memory</button>
+      </div>
+    </div>
+    <div class="modal-actions"><button class="ghost" onclick="closeModal()">Cancel</button><button onclick="applyGlobalSettings()">✓ Apply</button></div>
+  </div>`)}
+
+function onGsChange(){const v=$('gs-version').value;const bm=parseFloat($('gs-buy-mod').value)||0;const sm=parseFloat($('gs-sell-mod').value)||0;
+  gsTemp.version=v;gsTemp.buyModifier=bm;gsTemp.sellModifier=sm;
+  $('gs-mp-buy-mod').textContent=bm;$('gs-mp-sell-mod').textContent=sm;
+  $('gs-mp-final-buy').textContent=(1000*bm).toFixed(1);$('gs-mp-final-sell').textContent=(1000*sm).toFixed(1)}
+
+function applyGlobalSettings(){const versionChanged=gsTemp.version!==state.version;commit();state.buyModifier=gsTemp.buyModifier;state.sellModifier=gsTemp.sellModifier;
+  if(versionChanged){state.version=gsTemp.version;allItems=[];craftableIds.clear();recipesById={};itemById={};itemByName={};activeVersion=null;loadData(state.version)}
+  renderAll();persist();closeModal();toast('⚙ Global settings applied')}
+
+function openDeleteMemoryConfirm(){closeModal();showModal(`
+  <div class="warn-icon">🚨</div>
+  <h3 style="text-align:center;color:var(--danger)">Delete Everything?</h3>
+  <p style="text-align:center;font-size:13px">This will permanently erase <strong style="color:var(--danger)">ALL</strong> data:</p>
+  <ul style="font-size:12px;color:var(--text2);padding-left:20px;margin:10px 0;line-height:1.8"><li>All Simple Config items and pages</li><li>All Advanced Config base resources, pool, and pages</li><li>All settings (modifiers, version, theme)</li><li>Undo history</li></ul>
+  <div class="warn-text" style="font-size:12px;padding:12px">⚠️ This action is ABSOLUTELY PERMANENT.<br>There is no way to recover your work after this.</div>
+  <div class="modal-actions"><button class="ghost" onclick="closeModal()">Cancel</button><button class="danger-solid" onclick="confirmDeleteMemory()">🗑️ Yes, delete everything</button></div>`)}
+
+function confirmDeleteMemory(){try{localStorage.removeItem(STORAGE_KEY);localStorage.removeItem('mc_versions_cache');['eshgui_v30','eshgui_v29','eshgui_v28','eshgui_v27'].forEach(k=>localStorage.removeItem(k))}catch(e){}
+  state={theme:'dark',activeTab:'simple',version:'1.21.11',buyModifier:1.0,sellModifier:0.25,simple:DEFAULT_SIMPLE(),advanced:DEFAULT_ADVANCED()};
+  undoStack.length=0;redoStack.length=0;computedPool=[];simpleSelectedRows.clear();advSelectedRows.clear();
+  closeModal();renderAll();toast('🗑️ All data deleted')}
+
+/* ================= CLEAR PANEL ACTIONS ================= */
+function clearSimpleItems(){showModal(`<div class="warn-icon">⚠️</div><h3 style="text-align:center;color:var(--danger)">Clear Shop Items?</h3><p style="text-align:center">All items from "${esc(simpleCurPage().name)}" will be deleted.</p><div class="warn-text">⚠ PERMANENT — cannot be undone.</div><div class="modal-actions"><button class="ghost" onclick="closeModal()">Cancel</button><button class="danger-solid" onclick="doClearSimpleItems()">Yes, delete</button></div>`)}
+function doClearSimpleItems(){if(!simpleCurPage().items.length){toast('Already empty');closeModal();return}commit();simpleCurPage().items=[];simpleSelectedRows.clear();renderSimpleTable();persist();closeModal();toast('✓ Cleared')}
+function clearAdvancedPool(){showModal(`<div class="warn-icon">⚠️</div><h3 style="text-align:center;color:var(--danger)">Clear Advanced Pool?</h3><p style="text-align:center">All base resources, computed pool, and selection will be cleared.</p><div class="warn-text">⚠ PERMANENT — cannot be undone.</div><div class="modal-actions"><button class="ghost" onclick="closeModal()">Cancel</button><button class="danger-solid" onclick="doClearAdvancedPool()">Yes, delete</button></div>`)}
+function doClearAdvancedPool(){const a=state.advanced;if(!a.baseResources.length&&!computedPool.length){toast('Already empty');closeModal();return}commit();a.baseResources=[];computedPool=[];a.poolSelected=[];a.poolEdits={};a.poolOrder=[];$('calcStatus').textContent='';renderPool();persist();closeModal();toast('✓ Cleared')}
+
+/* ================= DATA LOADING ================= */
+function fallbackChain(v){const i=VERSIONS.indexOf(v);const chain=i===-1?[v,...VERSIONS]:VERSIONS.slice(i);return chain.slice(0,MAX_FALLBACK_ATTEMPTS)}
+async function fetchWithTimeout(url){const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),FETCH_TIMEOUT_MS);
+  try{return await fetch(url,{signal:ctrl.signal})}finally{clearTimeout(t)}}
+async function tryLoad(v){try{const r=await fetchWithTimeout(`${BASE_URL}/data/pc/${v}/items.json`);if(!r.ok)return null;const items=await r.json();if(!Array.isArray(items)||!items.length)return null;
+  let recipes={};try{const rr=await fetchWithTimeout(`${BASE_URL}/data/pc/${v}/recipes.json`);if(rr.ok)recipes=await rr.json()}catch(e){}
+  return{items,recipes}}catch(e){return null}}
+function applyData(items,recipes){allItems=items;itemById={};itemByName={};matToId={};
+  items.forEach(it=>{itemById[it.id]=it;itemByName[it.name.toLowerCase()]=it;matToId[matFromName(it.name)]=it.id});
+  recipesById={};craftableIds=new Set();
+  if(recipes&&Object.keys(recipes).length){Object.keys(recipes).forEach(k=>{const id=parseInt(k);const arr=recipes[k];
+    if(Array.isArray(arr)&&arr.length){recipesById[id]=arr;arr.forEach(r=>{if(r&&r.result&&r.result.id!==undefined)craftableIds.add(r.result.id);else craftableIds.add(id)})}})}}
+async function loadData(v){const st=$('simpleLoadStatus');if(st){st.textContent=`Loading ${v}...`;st.className='status'}
+  $('fallbackBanner').style.display='none';
+  const chain=fallbackChain(v);
+  for(let i=0;i<chain.length;i++){if(i>0&&st)st.textContent=`${v} unavailable — trying ${chain[i]}... (${i+1}/${chain.length})`;
+    const d=await tryLoad(chain[i]);
+    if(d){applyData(d.items,d.recipes);activeVersion=chain[i];updateStatus();renderSimpleSearch();renderAdvSearch();
+      if(chain[i]!==v)showFallback(v,chain[i]);return}}
+  if(st){st.textContent='❌ Could not load item data — check your connection and try again';st.className='status error'}
+  toast('❌ Could not load Minecraft item data')}
+function showFallback(req,act){const b=$('fallbackBanner');b.innerHTML=`⚠️ <strong>Fallback:</strong> ${esc(req)} unavailable. Using <strong>${esc(act)}</strong>. <button class="ghost sm" onclick="$('fallbackBanner').style.display='none'">Dismiss</button>`;b.style.display='block'}
+function updateStatus(){const st=$('simpleLoadStatus');if(st){const fb=activeVersion&&activeVersion!==state.version;st.innerHTML=`<span class="tag ${fb?'y':'g'}">${fb?'⚠':'✓'} ${esc(activeVersion||state.version)}</span> ${allItems.length} items`;st.className='status success'}
+  const vb=$('verBadge');const fb=activeVersion&&activeVersion!==state.version;vb.textContent=(fb?'⚠ ':'')+(activeVersion||state.version);vb.className='version'+(fb?' fallback':'')}
+
+/* ================= SEARCH ================= */
+function renderSimpleSearch(){const el=$('simpleSearchInput');if(!el)return;
+  const q=el.value.trim();const wrap=$('simpleSearchResults');const only=state.simple.onlyCraftable;
+  if(!q){wrap.classList.remove('open');wrap.innerHTML='';return}
+  const nq=norm(q);
+  const matches=allItems.filter(it=>{if(only&&craftableIds.size&&!craftableIds.has(it.id))return false;return norm(it.name).includes(nq)||(it.displayName&&norm(it.displayName).includes(nq))});
+  sortByRelevance(matches,nq);
+  const total=matches.length;const shown=matches.slice(0,SEARCH_LIMIT);
+  wrap.classList.add('open');
+  if(!shown.length){wrap.innerHTML='<div class="empty">No results</div>';return}
+  let html=shown.map(it=>{const m=matFromName(it.name);const c=craftableIds.has(it.id);const cat=getCategory(it.name);
+    return `<div class="result" onclick='addSimpleItem(${JSON.stringify(it.name).replace(/'/g,"&#39;")})'>${iconHtml(m,20)}<div class="meta"><div class="name">${esc(it.displayName||it.name)} <span class="tag ${c?'g':'y'}">${c?'craftable':'no recipe'}</span> <span class="tag b">${cat}</span></div><div class="id">${m}</div></div><button class="add">+ Add</button></div>`}).join('');
+  if(total>SEARCH_LIMIT)html+=`<div class="result-count">Showing ${SEARCH_LIMIT} of ${total} matches — refine your search</div>`;else html+=`<div class="result-count">${total} match${total===1?'':'es'}</div>`;
+  wrap.innerHTML=html;wrap.scrollTop=0}
+
+function renderAdvSearch(){const el=$('advSearchInput');if(!el)return;
+  const q=el.value.trim();const wrap=$('advSearchResults');
+  if(!q){wrap.classList.remove('open');wrap.innerHTML='';return}
+  const nq=norm(q);
+  const matches=allItems.filter(it=>norm(it.name).includes(nq)||(it.displayName&&norm(it.displayName).includes(nq)));
+  sortByRelevance(matches,nq);
+  const total=matches.length;const shown=matches.slice(0,SEARCH_LIMIT);
+  wrap.classList.add('open');
+  if(!shown.length){wrap.innerHTML='<div class="empty">No results</div>';return}
+  let html=shown.map(it=>{const m=matFromName(it.name);const isBase=state.advanced.baseResources.find(b=>b.material===m);const cat=getCategory(it.name);
+    return `<div class="result" onclick='addBase(${JSON.stringify(it.name).replace(/'/g,"&#39;")})'>${iconHtml(m,20)}<div class="meta"><div class="name">${esc(it.displayName||it.name)} ${isBase?'<span class="tag g">BASE</span>':''} <span class="tag b">${cat}</span></div><div class="id">${m}</div></div><button class="add">${isBase?'Update':'+ Base'}</button></div>`}).join('');
+  if(total>SEARCH_LIMIT)html+=`<div class="result-count">Showing ${SEARCH_LIMIT} of ${total} matches — refine your search</div>`;else html+=`<div class="result-count">${total} match${total===1?'':'es'}</div>`;
+  wrap.innerHTML=html;wrap.scrollTop=0}
+
+/* Arrow-key navigation + Enter-to-select for the search dropdowns (keyboard accessibility) */
+function highlightResult(results,idx){results.forEach(r=>r.classList.remove('kbd-active'));const r=results[idx];if(r){r.classList.add('kbd-active');r.scrollIntoView({block:'nearest'})}}
+function searchDropKeyNav(e,dropId){const wrap=$(dropId);if(!wrap||!wrap.classList.contains('open'))return;
+  const results=Array.from(wrap.querySelectorAll('.result'));if(!results.length)return;
+  let idx=results.findIndex(r=>r.classList.contains('kbd-active'));
+  if(e.key==='ArrowDown'){e.preventDefault();idx=(idx+1)%results.length;highlightResult(results,idx)}
+  else if(e.key==='ArrowUp'){e.preventDefault();idx=(idx-1+results.length)%results.length;highlightResult(results,idx)}
+  else if(e.key==='Enter'&&idx>=0){e.preventDefault();results[idx].click()}}
+function closeSimpleSearchDrop(){const el=$('simpleSearchResults');if(el)el.classList.remove('open')}
+function closeAdvSearchDrop(){const el=$('advSearchResults');if(el)el.classList.remove('open')}
+document.addEventListener('click',e=>{if(!e.target.closest('#simpleSearchWrap'))closeSimpleSearchDrop();if(!e.target.closest('#advSearchWrap'))closeAdvSearchDrop()});
+
+/* ================= IMPORT / BULK ================= */
+function toggleSimpleImport(){const area=$('simpleImportArea');const btn=$('simpleImportToggleBtn');
+  if(area.style.display==='block')hideSimpleImport();else{hideSimpleBulk();area.style.display='block';btn.classList.add('active');pendingSimpleImportFile=null;$('simpleImportFileName').textContent='—';$('simpleImportApplyBtn').disabled=true;$('simpleImportStatus').textContent='';$('simpleImportFileInput').value=''}}
+function hideSimpleImport(){$('simpleImportArea').style.display='none';$('simpleImportToggleBtn').classList.remove('active')}
+function toggleSimpleBulk(){const area=$('simpleBulkArea');const btn=$('simpleBulkToggleBtn');
+  if(area.style.display==='block')hideSimpleBulk();else{hideSimpleImport();area.style.display='block';btn.classList.add('active');$('simpleBulkStatus').textContent='';setTimeout(()=>$('simpleBulkText').focus(),50)}}
+function hideSimpleBulk(){$('simpleBulkArea').style.display='none';$('simpleBulkToggleBtn').classList.remove('active')}
+function toggleAdvImport(){const area=$('advImportArea');const btn=$('advImportToggleBtn');
+  if(area.style.display==='block')hideAdvImport();else{hideAdvBulk();area.style.display='block';btn.classList.add('active');pendingAdvImportFile=null;$('advImportFileName').textContent='—';$('advImportApplyBtn').disabled=true;$('advImportStatus').textContent='';$('advImportFileInput').value=''}}
+function hideAdvImport(){$('advImportArea').style.display='none';$('advImportToggleBtn').classList.remove('active')}
+function toggleAdvBulk(){const area=$('advBulkArea');const btn=$('advBulkToggleBtn');
+  if(area.style.display==='block')hideAdvBulk();else{hideAdvImport();area.style.display='block';btn.classList.add('active');$('advBulkStatus').textContent='';setTimeout(()=>$('advBulkText').focus(),50)}}
+function hideAdvBulk(){$('advBulkArea').style.display='none';$('advBulkToggleBtn').classList.remove('active')}
+
+function onSimpleImportFileSelected(ev){const file=ev.target.files&&ev.target.files[0];
+  if(!file){pendingSimpleImportFile=null;$('simpleImportFileName').textContent='—';$('simpleImportApplyBtn').disabled=true;return}
+  if(!/\.(ya?ml)$/i.test(file.name)){toast('⚠ Only .yml or .yaml files');pendingSimpleImportFile=null;$('simpleImportFileName').textContent='—';$('simpleImportApplyBtn').disabled=true;return}
+  pendingSimpleImportFile=file;$('simpleImportFileName').textContent=file.name+' ('+(file.size/1024).toFixed(1)+' KB)';$('simpleImportApplyBtn').disabled=false}
+
+function onAdvImportFileSelected(ev){const file=ev.target.files&&ev.target.files[0];
+  if(!file){pendingAdvImportFile=null;$('advImportFileName').textContent='—';$('advImportApplyBtn').disabled=true;return}
+  if(!/\.(ya?ml)$/i.test(file.name)){toast('⚠ Only .yml or .yaml files');pendingAdvImportFile=null;$('advImportFileName').textContent='—';$('advImportApplyBtn').disabled=true;return}
+  pendingAdvImportFile=file;$('advImportFileName').textContent=file.name+' ('+(file.size/1024).toFixed(1)+' KB)';$('advImportApplyBtn').disabled=false}
+
+async function applySimpleImportFile(){const st=$('simpleImportStatus');if(!pendingSimpleImportFile){st.textContent='No file';st.className='status warn';return}
+  let text;try{text=await pendingSimpleImportFile.text()}catch(e){st.textContent='Read error';st.className='status error';return}
+  let parsed;try{parsed=parseShopYaml(text)}catch(e){st.textContent='Parse error';st.className='status error';return}
+  if(!parsed.pages.length){st.textContent='No pages found';st.className='status error';return}
+  commit();if($('simpleImportClear').checked){state.simple.pages=[];state.simple.currentPageIndex=0}
+  let total=0;parsed.pages.forEach(np=>{const ex=state.simple.pages.find(p=>p.name===np.name);if(ex){ex.guiRows=np.guiRows;ex.items=np.items}else state.simple.pages.push(np);total+=np.items.length});
+  if(state.simple.currentPageIndex>=state.simple.pages.length)state.simple.currentPageIndex=0;
+  renderSimplePages();renderSimpleTable();persist();st.textContent=`✅ Imported ${parsed.pages.length} pages, ${total} items`;st.className='status success';toast(`📥 ${total} items imported`);setTimeout(hideSimpleImport,1500)}
+
+async function applyAdvImportFile(){const st=$('advImportStatus');if(!pendingAdvImportFile){st.textContent='No file';st.className='status warn';return}
+  let text;try{text=await pendingAdvImportFile.text()}catch(e){st.textContent='Read error';st.className='status error';return}
+  let parsed;try{parsed=parseBaseYaml(text)}catch(e){st.textContent='Parse error';st.className='status error';return}
+  const keys=Object.keys(parsed);
+  if(!keys.length){st.textContent='No valid entries';st.className='status error';return}
+  commit();const a=state.advanced;if($('advImportClear').checked)a.baseResources=[];
+  let added=0,updated=0,missing=[];
+  keys.forEach(m=>{const item=itemByName[m.toLowerCase()];const mat=item?matFromName(item.name):m;
+    const ex=a.baseResources.find(b=>b.material===mat);
+    if(ex){ex.buy=parsed[m].buy;updated++}
+    else{a.baseResources.push({id:item?item.id:undefined,material:mat,name:item?item.name:m,buy:parsed[m].buy});if(!item)missing.push(m);added++}
+    if(!a.poolEdits[mat])a.poolEdits[mat]={displayname:item?defaultDisplay(item.name):defaultDisplay(mat),buy:parsed[m].buy,sellEnabled:true};else a.poolEdits[mat].buy=parsed[m].buy});
+  renderPool();persist();
+  const base=`✅ +${added} added${updated?`, ${updated} updated`:''}${missing.length?` (${missing.length} unknown)`:''}`;
+  st.textContent=base;st.className=missing.length?'status warn':'status success';
+  toast(`📥 ${added+updated} base resources imported`);setTimeout(hideAdvImport,1500)}
+
+/* ================= SIMPLE ITEMS ================= */
+function addSimpleItem(itemName){const it=allItems.find(x=>x.name===itemName);if(!it)return;const m=matFromName(it.name);
+  if(simpleCurPage().items.find(x=>x.material===m)){toast(`${m} already on page`);return}
+  commit();simpleCurPage().items.push({material:m,displayname:defaultDisplay(it.name),buy:100,sellEnabled:true});
+  renderSimpleTable();persist();toast(`+ ${m}`);renderSimpleSearch()}
+
+function removeSimpleItem(i){commit();simpleCurPage().items.splice(i,1);renderSimpleTable();persist()}
+function updateSimpleItem(i,field,val){const it=simpleCurPage().items[i];if(!it)return;if(field==='buy')it.buy=parseFloat(val)||0;else it[field]=val;persist()}
+function updateSimpleItemCommit(i,field,val){commit();updateSimpleItem(i,field,val);renderSimpleTable()}
+function toggleSimpleSell(i,v){commit();simpleCurPage().items[i].sellEnabled=v;renderSimpleTable();persist()}
+function simpleToggleRow(i,v){if(v)simpleSelectedRows.add(i);else simpleSelectedRows.delete(i);renderSimpleTable()}
+function simpleToggleAllRows(v){if(v)simpleCurPage().items.forEach((_,i)=>simpleSelectedRows.add(i));else simpleSelectedRows.clear();renderSimpleTable()}
+function simpleBulkSelectNone(){simpleSelectedRows.clear();renderSimpleTable()}
+
+/* ================= SIMPLE TABLE ================= */
+function renderSimpleTable(){const body=$('simpleItemsBody');if(!body)return;const page=simpleCurPage();
+  const filter=norm($('simpleFilterItems').value.trim());const sortMode=$('simpleSortItems').value;const catFilter=$('simpleCategoryFilter').value;
+  const bm=parseFloat(state.buyModifier)||1;const sm=parseFloat(state.sellModifier)||1;
+  $('simpleItemCount').textContent=page.items.length;
+  $('simpleBadge').textContent=state.simple.pages.reduce((a,p)=>a+p.items.length,0);
+  $('simplePageTitle').textContent=`${state.simple.fileName}.yml · ${page.name}`;
+  updateSimplePreviewInfo();
+  const cats=new Set();page.items.forEach(it=>cats.add(getCategory(it.material)));
+  const catSel=$('simpleCategoryFilter');const prev=catSel.value;
+  catSel.innerHTML='<option value="">All</option>'+Array.from(cats).sort().map(c=>`<option value="${c}">${c}</option>`).join('');catSel.value=prev;
+  let list=page.items.map((it,i)=>({it,i}));
+  if(filter)list=list.filter(({it})=>norm(it.material).includes(filter)||norm(it.displayname).includes(filter));
+  if(catFilter)list=list.filter(({it})=>getCategory(it.material)===catFilter);
+  if(sortMode!=='none'){const cmp={'name-asc':(a,b)=>a.it.material.localeCompare(b.it.material),'name-desc':(a,b)=>b.it.material.localeCompare(a.it.material),'buy-asc':(a,b)=>a.it.buy-b.it.buy,'buy-desc':(a,b)=>b.it.buy-a.it.buy,'cat':(a,b)=>getCategory(a.it.material).localeCompare(getCategory(b.it.material))}[sortMode];if(cmp)list.sort(cmp)}
+  const allBox=$('simpleSelectAllBox');if(allBox){const t=page.items.length,s=simpleSelectedRows.size;allBox.checked=t>0&&s===t;allBox.indeterminate=s>0&&s<t}
+  if(!list.length){body.innerHTML=`<tr><td colspan="10"><div class="empty">${page.items.length?'No items match filter':'Search above to add items'}</div></td></tr>`;renderSimplePreview();renderSimpleBulkBar();renderSimpleValidation();return}
+  body.innerHTML=list.map(({it,i})=>{const isSel=simpleSelectedRows.has(i);const cat=getCategory(it.material);
+    const finalBuy=it.buy*bm;const finalSell=it.sellEnabled?it.buy*sm:-1;
+    return `<tr class="${isSel?'selected':''}" draggable="true" data-idx="${i}">
+      <td><input type="checkbox" ${isSel?'checked':''} aria-label="Select ${esc(it.material)}" onchange="simpleToggleRow(${i},this.checked)"></td>
+      <td><span class="drag" data-tip="Drag to reorder" aria-hidden="true">⋮⋮</span></td>
+      <td>${iconHtml(it.material,22)}</td>
+      <td><span class="mat-name"><b>${it.material}</b> <span class="tag b">${cat}</span></span></td>
+      <td><input type="text" value="${esc(it.displayname)}" aria-label="Display name for ${esc(it.material)}" onchange="updateSimpleItemCommit(${i},'displayname',this.value)"></td>
+      <td><input type="number" step="0.1" min="0" value="${it.buy}" aria-label="Buy price for ${esc(it.material)}" onchange="updateSimpleItemCommit(${i},'buy',this.value)"></td>
+      <td><span class="calc-val buy">${fmt(finalBuy)}</span></td>
+      <td><span class="calc-val ${it.sellEnabled?'sell':'disabled'}">${it.sellEnabled?fmt(finalSell):'-1'}</span></td>
+      <td style="text-align:center"><input type="checkbox" ${it.sellEnabled?'checked':''} aria-label="Sellable" onchange="toggleSimpleSell(${i},this.checked)"></td>
+      <td><div class="row-actions"><button class="danger sm" onclick="removeSimpleItem(${i})" data-tip="Remove" aria-label="Remove ${esc(it.material)}">✕</button></div></td>
+    </tr>`}).join('');
+  attachSimpleDrag();attachTableInputs();renderSimplePreview();renderSimpleBulkBar();renderSimpleValidation()}
+
+function attachSimpleDrag(){const body=$('simpleItemsBody');if(!body)return;let src=null;
+  body.querySelectorAll('tr[draggable]').forEach(tr=>{
+    tr.addEventListener('dragstart',e=>{src=+tr.dataset.idx;tr.classList.add('dragging');e.dataTransfer.effectAllowed='move'});
+    tr.addEventListener('dragend',()=>tr.classList.remove('dragging'));
+    tr.addEventListener('dragover',e=>{e.preventDefault();tr.classList.add('drop-target')});
+    tr.addEventListener('dragleave',()=>tr.classList.remove('drop-target'));
+    tr.addEventListener('drop',e=>{e.preventDefault();tr.classList.remove('drop-target');const dst=+tr.dataset.idx;if(src===null||src===dst)return;commit();
+      const items=simpleCurPage().items;const[m]=items.splice(src,1);items.splice(dst,0,m);simpleSelectedRows.clear();renderSimpleTable();persist()})})}
+
+function renderSimpleBulkBar(){const bar=$('simpleBulkBar');if(!bar)return;if(!simpleSelectedRows.size){bar.style.display='none';return}bar.style.display='flex';$('simpleBulkCount').textContent=simpleSelectedRows.size}
+function renderSimpleValidation(){const bm=parseFloat(state.buyModifier)||1;const sm=parseFloat(state.sellModifier)||1;const issues=[];if(sm>bm)issues.push(`Sell modifier (${sm}) > Buy modifier (${bm})`);
+  const el=$('simpleValidationHint');if(!el)return;if(!issues.length){el.innerHTML='';return}el.innerHTML=`<span style="color:var(--warn)">⚠ ${issues.map(esc).join(' • ')}</span>`}
+
+/* ================= SIMPLE BULK ================= */
+function simpleBulkDelete(){if(!simpleSelectedRows.size)return;
+  showConfirm('Delete items?',`${simpleSelectedRows.size} item(s) will be removed from this page.`,()=>{
+    commit();simpleCurPage().items=simpleCurPage().items.filter((_,i)=>!simpleSelectedRows.has(i));simpleSelectedRows.clear();renderSimpleTable();persist()})}
+function simpleBulkMultiply(){if(!simpleSelectedRows.size)return;
+  showPromptNumber('Multiply buy price','Multiply factor',2,f=>{if(!isFinite(f)||f<=0){toast('Invalid factor');return}commit();
+    simpleCurPage().items.forEach((it,i)=>{if(simpleSelectedRows.has(i))it.buy=+(it.buy*f).toFixed(2)});renderSimpleTable();persist();toast(`× ${f}`)})}
+function simpleBulkAutoSell(){if(!simpleSelectedRows.size)return;commit();
+  simpleCurPage().items.forEach((it,i)=>{if(simpleSelectedRows.has(i))it.sellEnabled=true});renderSimpleTable();persist();toast('Sell enabled')}
+function simpleBulkToggleSell(v){if(!simpleSelectedRows.size)return;commit();
+  simpleCurPage().items.forEach((it,i)=>{if(simpleSelectedRows.has(i))it.sellEnabled=v});renderSimpleTable();persist()}
+
+/* ================= YAML GENERATION (shared) ================= */
+/* Both Simple and Advanced configs use the exact same EconomyShopGUI page/item structure,
+   so a single generator serves both instead of two copy-pasted implementations. */
+function buildShopYaml(pages,bm,sm){
+  let y='############################\n#\n# A configuration for EconomyShopGui\n#\n############################\npages:\n';
+  pages.forEach(page=>{y+=`  ${page.name}:\n    gui-rows: ${page.guiRows}\n    items:\n`;
+    if(!page.items.length)y+='      # (empty)\n';
+    else page.items.forEach(it=>{const fb=it.buy*bm;const fs=it.buy*sm;
+      y+=`      ${it.material}:\n        material: ${it.material}\n        displayname: "${it.displayname}"\n        buy: ${fmt(fb)}\n        sell: ${it.sellEnabled?fmt(fs):-1}\n`})});
+  return y}
+
+/* ================= SIMPLE YAML ================= */
+function generateSimpleYaml(forceFullFile){const bm=parseFloat(state.buyModifier)||1;const sm=parseFloat(state.sellModifier)||1;
+  const onlyCurrent=!forceFullFile&&(state.simple.previewCurrent!==false);
+  const pages=onlyCurrent?[simpleCurPage()]:state.simple.pages;
+  return buildShopYaml(pages,bm,sm)}
+function renderSimplePreview(){const el=$('simplePreview');if(!el)return;el.textContent=generateSimpleYaml();updateSimplePreviewInfo()}
+function updateSimplePreviewInfo(){const pi=$('simplePreviewInfo');if(!pi)return;
+  const onlyCurrent=state.simple.previewCurrent!==false;
+  if(onlyCurrent){const p=simpleCurPage();pi.textContent=`${state.simple.fileName}.yml · ${p.name} · ${p.items.length} items`}
+  else{const total=state.simple.pages.reduce((a,p)=>a+p.items.length,0);pi.textContent=`${state.simple.fileName}.yml · all pages · ${total} items`}}
+function toggleSimplePreviewMode(){state.simple.previewCurrent=!state.simple.previewCurrent;updateSimplePreviewModeBtn();renderSimplePreview();persist()}
+function updateSimplePreviewModeBtn(){const btn=$('simplePreviewModeBtn');if(!btn)return;const onlyCurrent=state.simple.previewCurrent!==false;btn.innerHTML=onlyCurrent?'📄 This page':'📚 Full file';btn.classList.toggle('all',!onlyCurrent)}
+function exportSimpleYaml(){downloadBlob(generateSimpleYaml(true),(state.simple.fileName||'shop')+'.yml')}
+async function copySimpleYaml(){try{await navigator.clipboard.writeText(generateSimpleYaml(true));toast('Copied (full file)')}catch(e){toast('Could not copy')}}
+
+/* ================= SIMPLE PAGES ================= */
+function renderSimplePages(){const s=state.simple;
+  const html=s.pages.map((p,i)=>`<button class="page ${i===s.currentPageIndex?'active':''}" onclick="switchSimplePage(${i})">${esc(p.name)} <span style="opacity:.6">${p.items.length}</span>${s.pages.length>1?`<span class="x" onclick="event.stopPropagation();deleteSimplePage(${i})">✕</span>`:''}</button>`).join('')+`<button class="ghost sm" onclick="addSimplePage()">+ Page</button>`;
+  const bar=$('simplePagesBar');if(bar)bar.innerHTML=html;
+  const p=simpleCurPage();
+  if($('simplePageNameInput')&&$('simplePageNameInput').value!==p.name)$('simplePageNameInput').value=p.name;
+  if($('simplePageRowsInput')&&parseInt($('simplePageRowsInput').value)!==p.guiRows)$('simplePageRowsInput').value=p.guiRows;
+  if($('simpleFileNameInput')&&$('simpleFileNameInput').value!==state.simple.fileName)$('simpleFileNameInput').value=state.simple.fileName}
+function switchSimplePage(i){simpleSelectedRows.clear();state.simple.currentPageIndex=i;renderSimplePages();renderSimpleTable();updateSimplePreviewModeBtn();persist()}
+function addSimplePage(){commit();const n=state.simple.pages.length+1;state.simple.pages.push({name:'page'+n,guiRows:4,items:[]});state.simple.currentPageIndex=state.simple.pages.length-1;renderSimplePages();renderSimpleTable();persist();toast('+ Page '+state.simple.pages.length)}
+function deleteSimplePage(i){if(state.simple.pages.length===1)return;
+  showConfirm('Delete page?',`"${esc(state.simple.pages[i].name)}" and all its items will be removed.`,()=>{
+    commit();state.simple.pages.splice(i,1);if(state.simple.currentPageIndex>=state.simple.pages.length)state.simple.currentPageIndex=state.simple.pages.length-1;renderSimplePages();renderSimpleTable();persist()})}
+
+/* ================= PARSE YAML ================= */
+/* Uses js-yaml for real structural parsing instead of a hand-rolled line/indent regex parser,
+   so files with different comment styles, key order, or indentation still import correctly. */
+function parseShopYaml(text){
+  const result={pages:[]};
+  if(typeof jsyaml==='undefined')throw new Error('YAML library unavailable');
+  const doc=jsyaml.load(text);
+  if(!doc||typeof doc!=='object')return result;
+  const pagesObj=(doc.pages&&typeof doc.pages==='object')?doc.pages:doc;
+  Object.keys(pagesObj).forEach(pageName=>{
+    const pd=pagesObj[pageName];if(!pd||typeof pd!=='object')return;
+    const guiRows=clampRows(pd['gui-rows']!==undefined?pd['gui-rows']:4);
+    const items=[];const itemsObj=(pd.items&&typeof pd.items==='object')?pd.items:null;
+    if(itemsObj)Object.keys(itemsObj).forEach(matKey=>{
+      const raw=itemsObj[matKey];let material=matFromName(matKey),displayname='',buy=0,sellEnabled=true;
+      if(raw&&typeof raw==='object'){
+        if(raw.material)material=matFromName(raw.material);
+        if(raw.displayname!==undefined)displayname=String(raw.displayname);
+        if(raw.buy!==undefined&&!isNaN(parseFloat(raw.buy)))buy=parseFloat(raw.buy);
+        if(raw.sell!==undefined){const s=parseFloat(raw.sell);sellEnabled=!(isNaN(s)||s<0)}
+      } else if(typeof raw==='number'){buy=raw}
+      if(!displayname)displayname=defaultDisplay(material);
+      items.push({material,displayname,buy,sellEnabled});
+    });
+    result.pages.push({name:String(pageName),guiRows,items});
+  });
+  return result;
+}
+
+function applySimpleBulkPaste(){const txt=$('simpleBulkText').value;const st=$('simpleBulkStatus');
+  if(!txt.trim()){st.textContent='Nothing';st.className='status warn';return}
+  commit();const page=simpleCurPage();const lines=txt.split('\n').map(l=>l.trim()).filter(l=>l&&!l.startsWith('#'));
+  let added=0,skipped=0;
+  lines.forEach(line=>{const p=line.split(/[\s,:]+/).filter(Boolean);if(!p.length)return;const m=matFromName(p[0]);const buy=p[1]!==undefined?parseFloat(p[1]):100;
+    if(page.items.find(i=>i.material===m)){skipped++;return}
+    page.items.push({material:m,displayname:defaultDisplay(m),buy:isNaN(buy)?100:buy,sellEnabled:true});added++});
+  renderSimpleTable();persist();st.textContent=`✅ +${added}${skipped?` (${skipped} skipped)`:''}`;st.className='status success';toast(`📋 ${added} added`);if(added)setTimeout(hideSimpleBulk,1200)}
+
+/* ================= ADVANCED: BASE + POOL ================= */
+function addBase(name){const it=allItems.find(x=>x.name===name);if(!it)return;const m=matFromName(it.name);const a=state.advanced;
+  const existing=a.baseResources.find(b=>b.material===m);
+  if(existing){if(!a.poolEdits[m])a.poolEdits[m]={displayname:defaultDisplay(it.name),buy:existing.buy,sellEnabled:true};renderPool();persist();toast(`${m} already a base resource`);renderAdvSearch();return}
+  commit();a.baseResources.push({id:it.id,material:m,name:it.name,buy:1});
+  if(!a.poolEdits[m])a.poolEdits[m]={displayname:defaultDisplay(it.name),buy:1,sellEnabled:true};
+  const inPool=computedPool.find(x=>x.material===m);
+  if(!inPool&&computedPool.length)computedPool.push({id:it.id,material:m,name:it.name,displayName:it.name,baseBuy:1,isBase:true,hasRecipe:false});
+  renderPool();persist();toast(`+ BASE ${m}`);renderAdvSearch()}
+
+function removeFromPool(material){commit();const a=state.advanced;
+  const bIdx=a.baseResources.findIndex(b=>b.material===material);if(bIdx!==-1)a.baseResources.splice(bIdx,1);
+  const pIdx=computedPool.findIndex(it=>it.material===material);if(pIdx!==-1)computedPool.splice(pIdx,1);
+  delete a.poolEdits[material];a.poolSelected=a.poolSelected.filter(x=>x!==material);
+  if(Array.isArray(a.poolOrder))a.poolOrder=a.poolOrder.filter(m=>m!==material);
+  advSelectedRows.clear();renderPool();persist();toast(`- ${material}`)}
+
+function exportBaseYaml(){if(!state.advanced.baseResources.length){toast('No base resources');return}
+  let y='# Base Resources\n\n';state.advanced.baseResources.forEach(b=>{y+=`${b.material}: ${fmt(b.buy)}\n`});downloadBlob(y,'base_resources.yml')}
+
+function parseBaseYaml(text){
+  const out={};
+  if(typeof jsyaml==='undefined')throw new Error('YAML library unavailable');
+  const doc=jsyaml.load(text);
+  if(!doc||typeof doc!=='object')return out;
+  function extractFlat(obj){Object.keys(obj).forEach(k=>{
+    if(!/^[A-Za-z][A-Za-z0-9_]*$/.test(k))return;const v=obj[k];
+    if(typeof v==='number')out[matFromName(k)]={buy:v};
+    else if(v&&typeof v==='object'&&v.buy!==undefined&&!isNaN(parseFloat(v.buy)))out[matFromName(k)]={buy:parseFloat(v.buy)};
+  })}
+  if(doc.pages&&typeof doc.pages==='object'){
+    Object.values(doc.pages).forEach(page=>{if(page&&page.items&&typeof page.items==='object')extractFlat(page.items)});
+  } else extractFlat(doc);
+  return out;
+}
+
+function applyAdvBulkPaste(){const txt=$('advBulkText').value;const st=$('advBulkStatus');
+  if(!txt.trim()){st.textContent='Nothing';st.className='status warn';return}
+  commit();const a=state.advanced;const lines=txt.split('\n').map(l=>l.trim()).filter(l=>l&&!l.startsWith('#'));
+  let added=0,invalid=0;
+  lines.forEach(line=>{const p=line.split(/[\s,:]+/).filter(Boolean);if(p.length<2){invalid++;return}
+    const name=p[0];const buy=parseFloat(p[1]);if(isNaN(buy)){invalid++;return}
+    const item=itemByName[name.toLowerCase()];const m=item?matFromName(item.name):matFromName(name);
+    const ex=a.baseResources.find(b=>b.material===m);
+    if(ex)ex.buy=buy;else a.baseResources.push({id:item?item.id:undefined,material:m,name:item?item.name:name,buy});
+    if(!a.poolEdits[m])a.poolEdits[m]={displayname:item?defaultDisplay(item.name):defaultDisplay(m),buy,sellEnabled:true};else a.poolEdits[m].buy=buy;added++});
+  renderPool();persist();st.textContent=`✅ +${added}${invalid?` (${invalid} invalid)`:''}`;st.className=invalid?'status warn':'status success';toast(`📋 ${added} added`);setTimeout(hideAdvBulk,1200)}
+
+/* ================= CALCULATION ================= */
+function parseCell(c){if(!c)return[];if(typeof c==='number')return[c];if(Array.isArray(c)){if(typeof c[0]==='number')return[c[0]];if(Array.isArray(c[0]))return c.map(x=>x[0])}if(c.id!==undefined)return[c.id];return[]}
+function extractIng(r){const out=[];if(r.inShape)r.inShape.forEach(row=>{if(Array.isArray(row))row.forEach(c=>{const ids=parseCell(c);if(ids.length)out.push({id:ids[0],count:1})})});
+  else if(r.ingredients)r.ingredients.forEach(c=>{const ids=parseCell(c);if(ids.length)out.push({id:ids[0],count:1})});return out}
+
+function runCalculation(){const st=$('calcStatus');const a=state.advanced;
+  if(!a.baseResources.length){st.textContent='⚠ Add base resources first';st.className='status warn';return}
+  st.textContent='Calculating...';st.className='status';
+  const bB={};a.baseResources.forEach(b=>{if(b.id!==undefined)bB[b.id]=b.buy});
+  /* Manually-pinned prices on computed (non-base) pool items also act as fixed nodes for this pass,
+     so an edit made to an intermediate item correctly flows into anything crafted from it — kept
+     separate from bB so these items still show as recipe/raw-sourced, not as BASE. */
+  const overrideB={};Object.keys(a.poolEdits).forEach(mat=>{const e=a.poolEdits[mat];if(e&&e.overridden){const id=matToId[mat];if(id!==undefined)overrideB[id]=e.buy}});
+  const cB={};const computing=new Set();
+  function computeBuy(id){if(cB[id]!==undefined)return cB[id];if(bB[id]!==undefined){cB[id]=bB[id];return bB[id]}
+    if(overrideB[id]!==undefined){cB[id]=overrideB[id];return overrideB[id]}
+    if(computing.has(id))return null;const recipes=recipesById[id];if(!recipes||!recipes.length)return null;
+    computing.add(id);let best=null;
+    for(const r of recipes){const ing=extractIng(r);if(!ing.length)continue;let tot=0,ok=true;
+      for(const x of ing){const p=computeBuy(x.id);if(p===null){ok=false;break}tot+=p*x.count}
+      if(!ok)continue;const rc=(r.result&&r.result.count)||1;const per=tot/rc;if(best===null||per<best)best=per}
+    computing.delete(id);if(best!==null)cB[id]=best;return best}
+  const pool=[];
+  craftableIds.forEach(id=>{const it=itemById[id];if(!it)return;const bb=computeBuy(id);const isBase=bB[id]!==undefined;
+    if(bb===null&&!isBase)return;pool.push({id,material:matFromName(it.name),name:it.name,displayName:it.displayName||it.name,baseBuy:bb,isBase,hasRecipe:!!recipesById[id]})});
+  a.baseResources.forEach(b=>{if(!pool.find(x=>x.material===b.material))pool.push({id:b.id,material:b.material,name:b.name,displayName:b.name,baseBuy:b.buy,isBase:true,hasRecipe:false})});
+  computedPool=pool;
+  /* Refresh every non-overridden item's price to the freshly computed value on every run (previously
+     a computed item's price only got set once — re-running Calculate after changing a base price
+     silently left every already-seen downstream item stuck at its old price). Manual overrides
+     (and true base resources, synced separately) are left untouched. */
+  pool.forEach(it=>{const existing=a.poolEdits[it.material];
+    if(!existing)a.poolEdits[it.material]={displayname:defaultDisplay(it.name),buy:it.baseBuy!==null?+it.baseBuy.toFixed(2):0,sellEnabled:true};
+    else if(!existing.overridden&&it.baseBuy!==null)existing.buy=+it.baseBuy.toFixed(2)});
+  a.poolSelected=pool.map(it=>it.material);
+  advSelectedRows.clear();
+  st.textContent=`✓ Computed ${pool.length} items`;st.className='status success';toast(`🧮 ${pool.length} items`);renderPool();persist()}
+
+function getPoolEntries(){const entries=computedPool.slice();const seen=new Set(entries.map(e=>e.material));
+  state.advanced.baseResources.forEach(b=>{if(!seen.has(b.material))entries.push({id:b.id,material:b.material,name:b.name,displayName:b.name,baseBuy:b.buy,isBase:true,hasRecipe:false})});
+  return entries}
+function isManualEntry(it){if(!it.isBase)return false;return state.advanced.baseResources.some(b=>b.material===it.material)}
+function getPoolValues(it){const e=state.advanced.poolEdits[it.material];
+  if(e)return{displayname:e.displayname||defaultDisplay(it.name),buy:e.buy,sellEnabled:e.sellEnabled!==false};
+  return{displayname:defaultDisplay(it.name),buy:it.baseBuy!==null?+it.baseBuy.toFixed(2):0,sellEnabled:true}}
+function updatePoolField(material,field,val){const a=state.advanced;
+  if(!a.poolEdits[material]){const it=computedPool.find(x=>x.material===material)||a.baseResources.find(x=>x.material===material);
+    a.poolEdits[material]={displayname:it?defaultDisplay(it.name):defaultDisplay(material),buy:it&&it.baseBuy!==null?+it.baseBuy.toFixed(2):0,sellEnabled:true}}
+  if(field==='buy'){const v=parseFloat(val)||0;a.poolEdits[material].buy=v;
+    const b=a.baseResources.find(x=>x.material===material);
+    if(b){b.buy=v}
+    else{const it=computedPool.find(x=>x.material===material);
+      if(it&&it.baseBuy!==null&&Math.abs(v-it.baseBuy)>1e-9)a.poolEdits[material].overridden=true;
+      else delete a.poolEdits[material].overridden}}
+  else if(field==='sellEnabled')a.poolEdits[material].sellEnabled=!!val;
+  else a.poolEdits[material][field]=val;
+  renderAdvancedPreview();persist()}
+function resetPoolOverride(material){const a=state.advanced;const e=a.poolEdits[material];if(!e||!e.overridden)return;
+  commit();delete e.overridden;const it=computedPool.find(x=>x.material===material);
+  if(it&&it.baseBuy!==null)e.buy=+it.baseBuy.toFixed(2);
+  renderPool();persist();toast('↺ Reset to computed price')}
+
+/* ================= POOL TABLE ================= */
+function renderPool(){const body=$('advPoolBody');if(!body)return;const a=state.advanced;
+  const q=norm($('advPoolFilter').value.trim());const sortMode=$('advPoolSort').value;const catFilter=$('advPoolCategoryFilter').value;
+  const only=$('advPoolOnlyPriced').checked;const bm=parseFloat(state.buyModifier)||1;const sm=parseFloat(state.sellModifier)||1;
+  const all=getPoolEntries();
+  $('advPoolCount').textContent=all.length;$('advBadge').textContent=a.baseResources.length;$('advBaseCount').textContent=a.baseResources.length;
+  const cats=new Set();all.forEach(it=>cats.add(getCategory(it.material)));
+  const catSel=$('advPoolCategoryFilter');const prev=catSel.value;
+  catSel.innerHTML='<option value="">All</option>'+Array.from(cats).sort().map(c=>`<option value="${c}">${c}</option>`).join('');catSel.value=prev;
+  let list=all.slice();
+  if(only)list=list.filter(it=>it.baseBuy!==null||it.isBase);
+  if(q)list=list.filter(it=>norm(it.material).includes(q)||norm(it.displayName).includes(q));
+  if(catFilter)list=list.filter(it=>getCategory(it.material)===catFilter);
+  if(sortMode!=='none'){
+    const cmp={'name-asc':(a,b)=>a.material.localeCompare(b.material),'name-desc':(a,b)=>b.material.localeCompare(a.material),'buy-asc':(a,b)=>getPoolValues(a).buy-getPoolValues(b).buy,'buy-desc':(a,b)=>getPoolValues(b).buy-getPoolValues(a).buy,'cat':(a,b)=>getCategory(a.material).localeCompare(getCategory(b.material))||a.material.localeCompare(b.material),'source':(a,b)=>{const sa=a.isBase?0:(a.hasRecipe?1:2);const sb=b.isBase?0:(b.hasRecipe?1:2);return sa-sb||a.material.localeCompare(b.material)}}[sortMode];
+    if(cmp)list.sort(cmp);
+  } else {
+    const om=new Map((a.poolOrder||[]).map((m,i)=>[m,i]));
+    list.sort((x,y)=>{
+      const xi=om.has(x.material)?om.get(x.material):Infinity;
+      const yi=om.has(y.material)?om.get(y.material):Infinity;
+      if(xi!==yi)return xi-yi;
+      if(x.isBase!==y.isBase)return x.isBase?-1:1;
+      return x.material.localeCompare(y.material);
+    });
+  }
+  list=list.slice(0,500);
+  const box=$('advPoolSelectAllBox');if(box){const t=all.length,s=advSelectedRows.size;box.checked=t>0&&s===t;box.indeterminate=s>0&&s<t}
+  if(!list.length){body.innerHTML=`<tr><td colspan="10"><div class="empty">Search above to add base resources</div></td></tr>`;$('advPoolHint').textContent='';$('advSelectedCount').textContent=advSelectedRows.size;renderAdvancedPreview();return}
+  body.innerHTML=list.map(it=>{const vals=getPoolValues(it);const finalBuy=vals.buy*bm;const finalSell=vals.sellEnabled?vals.buy*sm:-1;
+    const cat=getCategory(it.material);const isSel=advSelectedRows.has(it.material);const manual=isManualEntry(it);
+    const overridden=!it.isBase&&!!(a.poolEdits[it.material]&&a.poolEdits[it.material].overridden);
+    const sourceTag=(it.isBase?'<span class="tag g">BASE</span>':(it.hasRecipe?'<span class="tag">recipe</span>':'<span class="tag y">raw</span>'))
+      +(overridden?' <span class="tag y" data-tip="Manually pinned — this price is now used whenever other items are crafted from it">✎ edited</span>':'');
+    const arrow=manual?`<span class="manual-arrow" data-tip="Added manually by you">→</span>`:'';
+    return `<tr class="${isSel?'selected':''}" draggable="true" data-mat="${esc(it.material)}">
+      <td><input type="checkbox" ${isSel?'checked':''} aria-label="Select ${esc(it.material)}" onchange="togglePoolSelect('${it.material}',this.checked)"></td>
+      <td><span class="drag" data-tip="Drag to reorder" aria-hidden="true">⋮⋮</span></td>
+      <td>${iconHtml(it.material,22)}</td>
+      <td><span class="mat-name">${arrow}<b>${it.material}</b> <span class="tag b">${cat}</span> ${sourceTag}</span></td>
+      <td><input type="text" value="${esc(vals.displayname)}" aria-label="Display name for ${esc(it.material)}" onchange="updatePoolField('${it.material}','displayname',this.value)"></td>
+      <td><input type="number" step="0.1" min="0" value="${vals.buy}" aria-label="Buy price for ${esc(it.material)}" onchange="updatePoolField('${it.material}','buy',this.value)"></td>
+      <td><span class="calc-val buy">${fmt(finalBuy)}</span></td>
+      <td><span class="calc-val ${vals.sellEnabled?'sell':'disabled'}">${vals.sellEnabled?fmt(finalSell):'-1'}</span></td>
+      <td style="text-align:center"><input type="checkbox" ${vals.sellEnabled?'checked':''} aria-label="Sellable" onchange="updatePoolField('${it.material}','sellEnabled',this.checked)"></td>
+      <td><div class="row-actions">${overridden?`<button class="ghost sm" onclick="resetPoolOverride('${it.material}')" data-tip="Reset to computed price" aria-label="Reset ${esc(it.material)} to computed price">↺</button>`:''}<button class="danger sm" onclick="removeFromPool('${it.material}')" data-tip="Remove from pool" aria-label="Remove ${esc(it.material)} from pool">✕</button></div></td>
+    </tr>`}).join('');
+  $('advPoolHint').textContent=`Showing ${list.length} of ${all.length} items`;
+  $('advSelectedCount').textContent=advSelectedRows.size;
+  attachPoolDrag();
+  attachTableInputs();renderAdvancedPreview();renderAdvBulkBar()}
+
+function attachPoolDrag(){
+  const body=$('advPoolBody');if(!body)return;
+  let src=null;
+  body.querySelectorAll('tr[draggable]').forEach(tr=>{
+    tr.addEventListener('dragstart',e=>{
+      src=tr.dataset.mat;
+      tr.classList.add('dragging');
+      e.dataTransfer.effectAllowed='move';
+    });
+    tr.addEventListener('dragend',()=>tr.classList.remove('dragging'));
+    tr.addEventListener('dragover',e=>{e.preventDefault();tr.classList.add('drop-target')});
+    tr.addEventListener('dragleave',()=>tr.classList.remove('drop-target'));
+    tr.addEventListener('drop',e=>{
+      e.preventDefault();
+      tr.classList.remove('drop-target');
+      const dst=tr.dataset.mat;
+      if(!src||src===dst)return;
+      const visual=Array.from(body.querySelectorAll('tr[data-mat]')).map(t=>t.dataset.mat);
+      const srcIdx=visual.indexOf(src);
+      const dstIdx=visual.indexOf(dst);
+      if(srcIdx===-1||dstIdx===-1)return;
+      commit();
+      visual.splice(srcIdx,1);
+      visual.splice(dstIdx,0,src);
+      const allMats=getPoolEntries().map(it=>it.material);
+      const visibleSet=new Set(visual);
+      const hidden=allMats.filter(m=>!visibleSet.has(m));
+      state.advanced.poolOrder=[...visual,...hidden];
+      renderPool();
+      persist();
+      toast('Reordered');
+    });
+  });
+}
+
+function togglePoolSelect(material,v){if(v)advSelectedRows.add(material);else advSelectedRows.delete(material);renderPool();renderAdvBulkBar()}
+function advToggleAllPool(v){if(v)getPoolEntries().slice(0,500).forEach(it=>advSelectedRows.add(it.material));else advSelectedRows.clear();renderPool();renderAdvBulkBar()}
+function advBulkSelectNone(){advSelectedRows.clear();renderPool();renderAdvBulkBar()}
+
+function renderAdvBulkBar(){const bar=$('advBulkBar');if(!bar)return;if(!advSelectedRows.size){bar.style.display='none';return}bar.style.display='flex';$('advBulkCount').textContent=advSelectedRows.size}
+
+function advBulkDelete(){if(!advSelectedRows.size)return;
+  showConfirm('Remove from pool?',`${advSelectedRows.size} item(s) will be removed from the pool.`,()=>{
+    commit();
+    const toRemove=Array.from(advSelectedRows);
+    const a=state.advanced;
+    toRemove.forEach(mat=>{
+      const bIdx=a.baseResources.findIndex(b=>b.material===mat);if(bIdx!==-1)a.baseResources.splice(bIdx,1);
+      const pIdx=computedPool.findIndex(it=>it.material===mat);if(pIdx!==-1)computedPool.splice(pIdx,1);
+      delete a.poolEdits[mat];a.poolSelected=a.poolSelected.filter(x=>x!==mat);
+    });
+    if(Array.isArray(a.poolOrder))a.poolOrder=a.poolOrder.filter(m=>!toRemove.includes(m));
+    advSelectedRows.clear();renderPool();persist();toast(`🗑 ${toRemove.length} removed`)})}
+
+function advBulkMultiply(){if(!advSelectedRows.size)return;
+  showPromptNumber('Multiply buy price','Multiply factor',2,f=>{if(!isFinite(f)||f<=0){toast('Invalid factor');return}commit();const a=state.advanced;
+    advSelectedRows.forEach(mat=>{if(a.poolEdits[mat])a.poolEdits[mat].buy=+(a.poolEdits[mat].buy*f).toFixed(2)});renderPool();persist();toast(`× ${f}`)})}
+
+function advBulkAutoSell(){if(!advSelectedRows.size)return;commit();const a=state.advanced;
+  advSelectedRows.forEach(mat=>{if(a.poolEdits[mat])a.poolEdits[mat].sellEnabled=true});renderPool();persist();toast('Sell enabled')}
+
+function advBulkToggleSell(v){if(!advSelectedRows.size)return;commit();const a=state.advanced;
+  advSelectedRows.forEach(mat=>{if(a.poolEdits[mat])a.poolEdits[mat].sellEnabled=v});renderPool();persist()}
+
+/* ================= ADD TO ADV PAGE ================= */
+function addSelectedToAdvPage(){const a=state.advanced;const selected=Array.from(advSelectedRows);
+  if(!selected.length){toast('⚠ No items selected');return}
+  commit();const page=advancedCurPage();const all=getPoolEntries();
+  let added=0,updated=0;
+  selected.forEach(material=>{const it=all.find(x=>x.material===material);if(!it)return;const vals=getPoolValues(it);
+    const existing=page.items.find(x=>x.material===material);
+    if(existing){existing.displayname=vals.displayname;existing.buy=vals.buy;existing.sellEnabled=vals.sellEnabled;updated++}
+    else{page.items.push({material,displayname:vals.displayname,buy:vals.buy,sellEnabled:vals.sellEnabled});added++}});
+  advSelectedRows.clear();renderAdvPages();renderAdvancedPreview();renderPool();persist();toast(`📥 ${page.name}: +${added} added${updated?`, ${updated} updated`:''}`)}
+
+/* ================= ADVANCED PAGES ================= */
+function renderAdvPages(){const a=state.advanced;
+  const html=a.pages.map((p,i)=>`<button class="page ${i===a.currentPageIndex?'active':''}" onclick="switchAdvPage(${i})">${esc(p.name)} <span style="opacity:.6">${p.items.length}</span>${a.pages.length>1?`<span class="x" onclick="event.stopPropagation();deleteAdvPage(${i})">✕</span>`:''}</button>`).join('')+`<button class="ghost sm" onclick="addAdvPage()">+ Page</button>`;
+  const bar=$('advPagesBar');if(bar)bar.innerHTML=html;
+  const tbar=$('advTargetPagesBar');if(tbar)tbar.innerHTML=html;
+  const p=advancedCurPage();
+  if($('advPageNameInput')&&$('advPageNameInput').value!==p.name)$('advPageNameInput').value=p.name;
+  if($('advPageRowsInput')&&parseInt($('advPageRowsInput').value)!==p.guiRows)$('advPageRowsInput').value=p.guiRows;
+  if($('advFileNameInput')&&$('advFileNameInput').value!==a.fileName)$('advFileNameInput').value=a.fileName;
+  const t=$('advPageTitle');if(t)t.textContent=`${a.fileName}.yml · ${p.name}`}
+
+function switchAdvPage(i){state.advanced.currentPageIndex=i;renderAdvPages();renderAdvancedPreview();updateAdvPreviewModeBtn();persist()}
+function addAdvPage(){commit();const n=state.advanced.pages.length+1;state.advanced.pages.push({name:'page'+n,guiRows:4,items:[]});state.advanced.currentPageIndex=state.advanced.pages.length-1;renderAdvPages();renderAdvancedPreview();persist();toast('+ Page '+state.advanced.pages.length)}
+function deleteAdvPage(i){if(state.advanced.pages.length===1)return;
+  showConfirm('Delete page?',`"${esc(state.advanced.pages[i].name)}" and all its items will be removed.`,()=>{
+    commit();state.advanced.pages.splice(i,1);if(state.advanced.currentPageIndex>=state.advanced.pages.length)state.advanced.currentPageIndex=state.advanced.pages.length-1;renderAdvPages();renderAdvancedPreview();persist()})}
+
+function generateAdvancedYaml(forceFullFile){const bm=parseFloat(state.buyModifier)||1;const sm=parseFloat(state.sellModifier)||1;
+  const onlyCurrent=!forceFullFile&&(state.advanced.previewCurrent!==false);
+  const pages=onlyCurrent?[advancedCurPage()]:state.advanced.pages;
+  return buildShopYaml(pages,bm,sm)}
+function renderAdvancedPreview(){const el=$('advancedPreview');if(!el)return;el.textContent=generateAdvancedYaml();el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),80);updateAdvPreviewInfo()}
+function updateAdvPreviewInfo(){const pi=$('advPreviewInfo');if(!pi)return;const a=state.advanced;const onlyCurrent=a.previewCurrent!==false;
+  if(onlyCurrent){const p=advancedCurPage();pi.textContent=`${a.fileName}.yml · ${p.name} · ${p.items.length} items`}
+  else{const total=a.pages.reduce((s,p)=>s+p.items.length,0);pi.textContent=`${a.fileName}.yml · all pages · ${total} items`}}
+function toggleAdvPreviewMode(){state.advanced.previewCurrent=!state.advanced.previewCurrent;updateAdvPreviewModeBtn();renderAdvancedPreview();persist()}
+function updateAdvPreviewModeBtn(){const btn=$('advPreviewModeBtn');if(!btn)return;const onlyCurrent=state.advanced.previewCurrent!==false;btn.innerHTML=onlyCurrent?'📄 This page':'📚 Full file';btn.classList.toggle('all',!onlyCurrent)}
+function exportAdvancedYaml(){downloadBlob(generateAdvancedYaml(true),(state.advanced.fileName||'shop')+'.yml')}
+async function copyAdvancedYaml(){try{await navigator.clipboard.writeText(generateAdvancedYaml(true));toast('Copied (full file)')}catch(e){toast('Could not copy')}}
+
+/* ================= PRESETS UI ================= */
+function openPresetsModal(mode){
+  const isBase=mode==='advanced-base';
+  const targetLabel=isBase?'Advanced base resources':`Simple page "${esc(simpleCurPage().name)}"`;
+  const presetNames=Object.keys(PRESETS);
+
+  showModal(`
+    <h3>✨ Presets <span style="font-size:11px;color:var(--text2);font-weight:400">→ ${isBase?'🧪':'📦'} ${targetLabel}</span></h3>
+    ${presetNames.length===0
+      ? `<p style="font-size:12px;color:var(--text3);text-align:center;padding:24px 0;line-height:1.6">
+           No presets available yet.<br>
+           <span style="font-size:11px">Add packs to the <code style="background:var(--bg);padding:1px 5px;border-radius:3px;color:var(--accent)">PRESETS</code> object to see them here.</span>
+         </p>`
+      : `<p style="font-size:11px;color:var(--text3);margin-bottom:10px">${presetNames.length} packs available</p>
+         ${presetNames.map(name=>`
+           <div class="preset-row" onclick="applyPreset('${name.replace(/'/g,"&#39;")}','${mode}')">
+             <span class="name">${name}</span>
+             <span class="count">${PRESETS[name].length} items</span>
+             <span class="go">→</span>
+           </div>
+         `).join('')}`
+    }
+    <div class="modal-actions"><button class="ghost" onclick="closeModal()">Close</button></div>
+  `);
+}
+
+function applyPreset(name,mode){
+  const list=PRESETS[name];
+  if(!list)return;
+  commit();
+  if(mode==='advanced-base'){
+    const a=state.advanced;
+    let added=0,updated=0;
+    list.forEach(([m,buy,sell])=>{
+      const item=itemByName[m.toLowerCase()];
+      const mat=item?matFromName(item.name):m;
+      const sellEnabled=!(sell===undefined||sell===-1||sell<0);
+      const ex=a.baseResources.find(b=>b.material===mat);
+      if(ex){ex.buy=buy;updated++}
+      else{a.baseResources.push({id:item?item.id:undefined,material:mat,name:item?item.name:m,buy});added++}
+      if(!a.poolEdits[mat])a.poolEdits[mat]={displayname:item?defaultDisplay(item.name):defaultDisplay(mat),buy,sellEnabled};
+      else{a.poolEdits[mat].buy=buy;a.poolEdits[mat].sellEnabled=sellEnabled}
+    });
+    renderPool();persist();closeModal();
+    toast(`✨ ${name}: +${added} added, ${updated} updated`);
+  } else {
+    let added=0,skipped=0;
+    list.forEach(([m,buy,sell])=>{
+      const mat=matFromName(m);
+      if(simpleCurPage().items.find(x=>x.material===mat)){skipped++;return}
+      const sellEnabled=!(sell===undefined||sell===-1||sell<0);
+      simpleCurPage().items.push({material:mat,displayname:defaultDisplay(mat),buy,sellEnabled});
+      added++;
+    });
+    renderSimpleTable();persist();closeModal();
+    toast(`✨ ${name}: +${added} added${skipped?` (${skipped} skipped)`:''}`);
+  }
+}
+
+/* ================= MODAL / TABS / DOWNLOAD ================= */
+function showModal(html){closeModal();const w=document.createElement('div');w.className='backdrop';w.onclick=e=>{if(e.target===w)closeModal()};w.innerHTML=`<div class="modal">${html}</div>`;document.body.appendChild(w)}
+function closeModal(){document.querySelectorAll('.backdrop').forEach(el=>el.remove())}
+
+/* Styled replacements for native confirm()/prompt() so every dialog in the app looks and behaves consistently
+   (native dialogs also don't fire reliably inside some embedded/webview contexts). */
+function showConfirm(title,message,onYes){
+  showModal(`<div class="warn-icon">⚠️</div><h3 style="text-align:center;color:var(--danger)">${esc(title)}</h3><p style="text-align:center">${message}</p><div class="modal-actions"><button class="ghost" onclick="closeModal()">Cancel</button><button class="danger-solid" id="confirmYesBtn">Yes, continue</button></div>`);
+  $('confirmYesBtn').onclick=()=>{closeModal();onYes()};
+}
+function showPromptNumber(title,label,defVal,onOk){
+  showModal(`<h3>${esc(title)}</h3><div class="field" style="margin:12px 0 0"><label>${esc(label)}</label><input type="number" id="promptNumInput" step="0.1" value="${defVal}"></div><div class="modal-actions"><button class="ghost" onclick="closeModal()">Cancel</button><button id="promptOkBtn">Apply</button></div>`);
+  const inp=$('promptNumInput');setTimeout(()=>{inp.focus();inp.select()},30);
+  const submit=()=>{const v=parseFloat(inp.value);closeModal();onOk(v)};
+  $('promptOkBtn').onclick=submit;
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submit()}});
+}
+
+function switchTab(name){state.activeTab=name;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));document.querySelectorAll('.tab-content').forEach(c=>c.classList.toggle('active',c.id==='tab-'+name));persist()}
+
+function downloadBlob(content,filename){const blob=new Blob([content],{type:'text/yaml'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);toast('⬇ '+filename)}
+
+function renderAll(){applyTheme();
+  const cb=$('simpleOnlyCraftable');if(cb)cb.checked=state.simple.onlyCraftable===true;
+  renderSimplePages();renderSimpleTable();updateSimplePreviewModeBtn();
+  renderAdvPages();renderPool();updateAdvPreviewModeBtn();
+  switchTab(state.activeTab||'simple')}
+
+/* ================= SHORTCUTS ================= */
+document.addEventListener('keydown',e=>{const mod=e.ctrlKey||e.metaKey;
+  if(mod&&e.key==='s'){e.preventDefault();if(state.activeTab==='advanced')exportAdvancedYaml();else exportSimpleYaml()}
+  else if(mod&&e.key.toLowerCase()==='z'&&!e.shiftKey){e.preventDefault();undo()}
+  else if(mod&&(e.key.toLowerCase()==='y'||(e.key.toLowerCase()==='z'&&e.shiftKey))){e.preventDefault();redo()}
+  else if(mod&&e.key==='f'){e.preventDefault();const el=state.activeTab==='advanced'?$('advSearchInput'):$('simpleSearchInput');if(el)el.focus()}
+  else if(mod&&e.key===','){e.preventDefault();openGlobalSettings()}
+  else if(e.key==='Escape'){closeModal();closeSimpleSearchDrop();closeAdvSearchDrop()}});
+
+/* ================= EVENTS ================= */
+$('simpleSearchInput').addEventListener('input',debounce(renderSimpleSearch,SEARCH_DEBOUNCE_MS));
+$('simpleSearchInput').addEventListener('focus',renderSimpleSearch);
+$('simpleSearchInput').addEventListener('keydown',e=>searchDropKeyNav(e,'simpleSearchResults'));
+$('simpleOnlyCraftable').addEventListener('change',e=>{state.simple.onlyCraftable=e.target.checked;renderSimpleSearch();persist()});
+$('simpleFilterItems').addEventListener('input',renderSimpleTable);
+$('simpleSortItems').addEventListener('change',renderSimpleTable);
+$('simpleCategoryFilter').addEventListener('change',renderSimpleTable);
+$('simpleFileNameInput').addEventListener('input',e=>{state.simple.fileName=e.target.value;renderSimpleTable();persist()});
+$('simplePageNameInput').addEventListener('input',e=>{simpleCurPage().name=e.target.value||'page';renderSimplePages();renderSimpleTable();persist()});
+$('simplePageRowsInput').addEventListener('change',e=>{simpleCurPage().guiRows=clampRows(e.target.value);e.target.value=simpleCurPage().guiRows;renderSimplePreview();persist()});
+$('advSearchInput').addEventListener('input',debounce(renderAdvSearch,SEARCH_DEBOUNCE_MS));
+$('advSearchInput').addEventListener('focus',renderAdvSearch);
+$('advSearchInput').addEventListener('keydown',e=>searchDropKeyNav(e,'advSearchResults'));
+$('advPoolFilter').addEventListener('input',renderPool);
+$('advPoolSort').addEventListener('change',renderPool);
+$('advPoolCategoryFilter').addEventListener('change',renderPool);
+$('advPoolOnlyPriced').addEventListener('change',renderPool);
+$('advFileNameInput').addEventListener('input',e=>{state.advanced.fileName=e.target.value;renderAdvPages();renderAdvancedPreview();persist()});
+$('advPageNameInput').addEventListener('input',e=>{advancedCurPage().name=e.target.value||'page';renderAdvPages();renderAdvancedPreview();persist()});
+$('advPageRowsInput').addEventListener('change',e=>{advancedCurPage().guiRows=clampRows(e.target.value);e.target.value=advancedCurPage().guiRows;renderAdvancedPreview();persist()});
+
+/* ================= INIT ================= */
+restore();
+renderAll();
+(async()=>{await loadVersionsFromApi();loadData(state.version)})();
+</script>
+</body>
+</html>
