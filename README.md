@@ -1,8 +1,11 @@
 EconomyShopGUI Price Calculator Configurator is A web-based tool for Minecraft server administrators using the EconomyShopGUI plugin.
+-SIMPLE CONFIG
+<img width="490" height="784" alt="IMG_20260911_073052" src="https://github.com/user-attachments/assets/4332497e-f2d9-485d-9cbd-0b94122c0419" />
+-ADVANCED CONFING CRAFTABLE ITEMS USING THE BASE ITEM CALCULATOR
+<img width="1058" height="1472" alt="IMG_20260911_073111" src="https://github.com/user-attachments/assets/1473e570-473d-4be7-8407-549cbf537b25" />
+-GLOBAL SETTINGS
+<img width="1050" height="1480" alt="IMG_20260911_073121" src="https://github.com/user-attachments/assets/6ff74ceb-da94-4687-8a57-83965ee6fa54" />
 
-<img width="1892" height="857" alt="Screenshot 2026-09-10 161822" src="https://github.com/user-attachments/assets/16a3c087-2465-4bc5-8b66-37b6b344c9de" />
-<img width="1897" height="856" alt="Screenshot 2026-09-10 161756" src="https://github.com/user-attachments/assets/56d1ace0-96a0-43d9-aaae-80b71a19fd93" />
-<img width="511" height="737" alt="Screenshot 2026-09-10 161832" src="https://github.com/user-attachments/assets/cb220954-1fe2-4bdb-bb62-6440a77d8335" />
 
 Everything runs directly in the browser. No installation, no backend, no build step.
 
